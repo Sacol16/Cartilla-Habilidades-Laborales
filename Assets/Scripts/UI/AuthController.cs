@@ -1,6 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class AuthController : MonoBehaviour
 {
@@ -25,6 +27,10 @@ public class AuthController : MonoBehaviour
     public TMP_Text emailValidationText;
     public TMP_Text passwordValidationText;
     public TMP_Text confirmPasswordValidationText;
+
+    [Header("Scene Routing")]
+    public string facilitatorSceneName = "Facilitador";
+    public string youthSceneName = "Estudiante";
 
     private AuthService _auth;
 
@@ -136,13 +142,29 @@ public class AuthController : MonoBehaviour
         {
             ShowStatus("Iniciando sesión...");
             await _auth.Login(email, password);
-            ShowStatus($"OK ✅ Rol: {_auth.CurrentUser.role}");
+
+            var role = _auth.CurrentUser != null ? _auth.CurrentUser.role : null;
+
+            if (role == "facilitator")
+            {
+                SceneManager.LoadScene(facilitatorSceneName);
+                return;
+            }
+
+            if (role == "youth")
+            {
+                SceneManager.LoadScene(youthSceneName);
+                return;
+            }
+
+            ShowStatus($"Rol desconocido: {role}");
         }
         catch (System.Exception ex)
         {
             ShowStatus($"Error: {ex.Message}");
         }
     }
+
 
     public async void OnClickRegisterFacilitator()
     {

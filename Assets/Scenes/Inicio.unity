@@ -1022,6 +1022,8 @@ MonoBehaviour:
   emailValidationText: {fileID: 1908074065}
   passwordValidationText: {fileID: 1351693501}
   confirmPasswordValidationText: {fileID: 1062426995}
+  facilitatorSceneName: Facilitador
+  youthSceneName: Estudiante
 --- !u!4 &142696924
 Transform:
   m_ObjectHideFlags: 0
@@ -8373,9 +8375,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 228787132}
   - {fileID: 1357779608}
+  - {fileID: 1704784266}
   - {fileID: 1398997671}
   - {fileID: 2095828122}
-  - {fileID: 1704784266}
   - {fileID: 1415114395}
   - {fileID: 142696924}
   - {fileID: 127055804}

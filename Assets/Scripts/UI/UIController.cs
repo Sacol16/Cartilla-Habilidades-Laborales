@@ -6,11 +6,7 @@ public class UIController : MonoBehaviour
     public GameObject principal;
     public GameObject iniciarSesion;
     public GameObject registro;
-
-    private void Start()
-    {
-        ShowPrincipal();
-    }
+    public GameObject group;
 
     public void ShowPrincipal()
     {
@@ -18,7 +14,6 @@ public class UIController : MonoBehaviour
         iniciarSesion.SetActive(false);
         registro.SetActive(false);
     }
-
     public void ShowLogin()
     {
         principal.SetActive(false);
@@ -31,5 +26,15 @@ public class UIController : MonoBehaviour
         principal.SetActive(false);
         iniciarSesion.SetActive(false);
         registro.SetActive(true);
+    }
+
+    public void ShowGroup()
+    {
+        group.SetActive(true);
+    }
+
+    public void HideGroup()
+    {
+        group.SetActive(false);
     }
 }

@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 391715d005538e94780763d815387869
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - apiConfig: {fileID: 11400000, guid: b1544e215f1386e45831decebbbba877, type: 2}
+  - groupNameInput: {instanceID: 0}
+  - feedbackText: {instanceID: 0}
+  - modalRoot: {instanceID: 0}
+  - groupsList: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 97b1d65d3966c1d418d7b4aa56e1eb64
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - apiConfig: {fileID: 11400000, guid: b1544e215f1386e45831decebbbba877, type: 2}
+  - totalStudentsText: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
