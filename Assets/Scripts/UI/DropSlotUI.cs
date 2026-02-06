@@ -1,18 +1,23 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class DropSlotUI : MonoBehaviour, IDropHandler
 {
+    [Header("Index")]
+    [Tooltip("Índice de este slot (0..5). Debe coincidir con el orden que maneja el Manager.")]
+    public int slotIndex = 0;
+
     [Header("Config")]
-    public string acceptedItemId = ""; // opcional: filtrar qué item entra aquí (ej: "Item_1")
+    public string acceptedItemId = "";
     public bool onlyOneItem = true;
 
     [Header("Feedback")]
     public AudioSource audioSource;
     public AudioClip placedSfx;
-    public Animator slotAnimator; // opcional (si tienes anim)
-    public string animTriggerName = "Placed";
+
+    [Header("Particles")]
+    public ParticleSystem confettiFx;          // Asigna aquí el ParticleSystem (o uno global compartido)
+    public bool spawnAtSlotCenter = true;      // Si está activo, lo posiciona en el centro del slot (world)
 
     private bool occupied = false;
 
@@ -26,33 +31,43 @@ public class DropSlotUI : MonoBehaviour, IDropHandler
         var draggable = dragged.GetComponent<DraggableUI>();
         if (draggable == null || draggable.isPlaced) return;
 
-        // Si quieres que cada slot acepte un item específico
+        // Validación opcional por ID/nombre
         if (!string.IsNullOrEmpty(acceptedItemId) && dragged.name != acceptedItemId)
             return;
 
         // Snap
         draggable.SnapTo(transform, lockInPlace: true);
 
-        // Marca ocupado
         if (onlyOneItem) occupied = true;
+
+        // ? Avisar al manager (guardar qué item quedó en este slot)
+        if (Module1ActivityManager.Instance != null)
+        {
+            Module1ActivityManager.Instance.RegisterPlacement(slotIndex, dragged.name);
+        }
+        else
+        {
+            Debug.LogWarning("DropSlotUI: No hay Module1ActivityManager.Instance en la escena.");
+        }
 
         // Sonido
         if (audioSource != null && placedSfx != null)
             audioSource.PlayOneShot(placedSfx);
 
-        // Mini animación
-        if (slotAnimator != null && !string.IsNullOrEmpty(animTriggerName))
-            slotAnimator.SetTrigger(animTriggerName);
-        else
-            StartCoroutine(PunchScale(dragged.transform));
+        // Confetti
+        if (confettiFx != null)
+        {
+            if (spawnAtSlotCenter)
+                confettiFx.transform.position = transform.position;
+
+            confettiFx.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            confettiFx.Play();
+        }
     }
 
-    System.Collections.IEnumerator PunchScale(Transform t)
+    // (Opcional) Para que el Manager pueda reiniciar el estado del slot si luego haces "Reset"
+    public void ResetSlot()
     {
-        // animación simple sin Animator: “pop”
-        Vector3 baseScale = t.localScale;
-        t.localScale = baseScale * 1.12f;
-        yield return new WaitForSeconds(0.08f);
-        t.localScale = baseScale;
+        occupied = false;
     }
 }

@@ -50,14 +50,18 @@ public class DraggableUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (isPlaced) return;
 
-        // Si no cayó en slot, vuelve
-        if (!isPlaced)
+        // Restauro raycasts siempre al final del drag
+        canvasGroup.blocksRaycasts = true;
+
+        // ? SOLO vuelve al origen si todavía está en el "drag layer"
+        // (es decir, si NO lo re-parentearon a un slot)
+        if (rect.parent == rootCanvas.transform)
         {
             rect.SetParent(originalParent, true);
             rect.anchoredPosition = originalAnchoredPos;
-            canvasGroup.blocksRaycasts = true;
         }
     }
+
 
     // Lo llama el slot cuando acepta el item
     public void SnapTo(Transform slot, bool lockInPlace = true)

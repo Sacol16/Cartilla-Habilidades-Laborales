@@ -1695,7 +1695,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1357934546}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1420523166}
+        m_TargetAssemblyTypeName: NextCanvas, Assembly-CSharp
+        m_MethodName: Modulo1
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1357934546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1909,13 +1921,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1420523164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 593ec5d23029a7640b51857865d3039e, type: 3}
+  m_Script: {fileID: 11500000, guid: b3031b5670981924180bcdf9003453b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  principal: {fileID: 943369390}
-  iniciarSesion: {fileID: 478273522}
-  registro: {fileID: 0}
-  group: {fileID: 0}
+  canva1: {fileID: 943369390}
+  canva2: {fileID: 478273522}
 --- !u!1 &1559380370
 GameObject:
   m_ObjectHideFlags: 0
@@ -2189,8 +2199,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1420523166}
-        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: ShowLogin
+        m_TargetAssemblyTypeName: NextCanvas, Assembly-CSharp
+        m_MethodName: SwitchCanva
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
