@@ -14,6 +14,10 @@ public class CaseOptionSelector : MonoBehaviour
     [SerializeField] private Color selectedColor = Color.green;
     [SerializeField] private Color unselectedColor = Color.red;
 
+    [Header("UI to enable")]
+    [Tooltip("Se activa cuando hay una opción seleccionada (por ejemplo un botón de continuar).")]
+    [SerializeField] private GameObject enableWhenSelected;
+
     [Header("State (read-only)")]
     [SerializeField] private int selectedIndex = -1;
 
@@ -56,6 +60,13 @@ public class CaseOptionSelector : MonoBehaviour
 
         selectedIndex = index;
         RefreshVisuals();
+
+        // ? Guardar selección en el manager (Actividad 4)
+        if (Module1ActivityManager.Instance != null)
+        {
+            // Usa el "answer" como ID/texto guardado
+            Module1ActivityManager.Instance.SetActivity4SelectedOption(GetSelectedAnswer());
+        }
     }
 
     /// <summary>
@@ -65,6 +76,12 @@ public class CaseOptionSelector : MonoBehaviour
     {
         selectedIndex = -1;
         RefreshVisuals();
+
+        // ? Limpiar selección en el manager (Actividad 4)
+        if (Module1ActivityManager.Instance != null)
+        {
+            Module1ActivityManager.Instance.ClearActivity4Selection();
+        }
     }
 
     public int GetSelectedIndex() => selectedIndex;
@@ -96,5 +113,9 @@ public class CaseOptionSelector : MonoBehaviour
 
             img.color = (i == selectedIndex) ? selectedColor : unselectedColor;
         }
+
+        // ? Activar/desactivar el GameObject según si hay selección
+        if (enableWhenSelected != null)
+            enableWhenSelected.SetActive(HasSelection());
     }
 }

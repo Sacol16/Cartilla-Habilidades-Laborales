@@ -115,6 +115,8 @@ public class Linea : MonoBehaviour
 
         StrokeCount++;
         OnStrokeCountChanged?.Invoke(StrokeCount);
+        Debug.Log($"[Linea] StrokeCount incrementado a: {StrokeCount} | strokes.Count={strokes.Count} | undoStack.Count={undoStack.Count} | currentLine={currentLine?.name}");
+        Debug.Log($"[Linea] OnStrokeCountChanged Invoke -> {StrokeCount} | listeners? {(OnStrokeCountChanged == null ? "NO" : "SI")}");
 
         previousPosition = Vector3.positiveInfinity;
     }
@@ -227,6 +229,7 @@ public class Linea : MonoBehaviour
     public void SetColorYellow() => nextColor = Color.yellow;
     public void SetColorBlue() => nextColor = Color.blue;
     public void SetColorBlack() => nextColor = Color.black;
+    public void SetColorWhite() => nextColor = Color.white;
 
     // =========================
     //  LIMIT DRAW AREA

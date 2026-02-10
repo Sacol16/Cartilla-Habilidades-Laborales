@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class Module1ActivityManager : MonoBehaviour
 {
@@ -24,14 +25,30 @@ public class Module1ActivityManager : MonoBehaviour
     [SerializeField] private GameObject continueButton3;
     [SerializeField] private int minLinesForContinue3 = 10;
 
+    [Header("Actividad 4")]
+    [SerializeField] private GameObject continueButton4;
+
+    // =========================
     // Actividad 1: slotIndex -> itemName
+    // =========================
     private readonly Dictionary<int, string> placedBySlot = new Dictionary<int, string>();
 
+    // =========================
     // Actividad 2: inputIndex -> respuesta
+    // =========================
     private readonly Dictionary<int, string> answersByInput = new Dictionary<int, string>();
     private bool activity2WasLogged = false;
-
     private TMP_InputField[] inputs;
+
+    // =========================
+    // Actividad 4: selección + audio
+    // =========================
+    public string Activity4SelectedOptionId { get; private set; } = "";
+    public string Activity4AudioBase64 { get; private set; } = "";
+    public byte[] Activity4AudioBytes { get; private set; }
+
+    // ? NUEVO: flag para “audio confirmado” (sirve para WebGL timing)
+    public bool Activity4HasAudioFlag { get; private set; } = false;
 
     private void Awake()
     {
@@ -68,8 +85,6 @@ public class Module1ActivityManager : MonoBehaviour
 
         activity2WasLogged = false;
 
-        // Listeners: guardar + toggle botón (onValueChanged)
-        // y log UNA sola vez cuando terminen de editar (onEndEdit)
         for (int i = 0; i < inputs.Length; i++)
         {
             if (inputs[i] == null)
@@ -80,35 +95,37 @@ public class Module1ActivityManager : MonoBehaviour
 
             int index = i;
 
-            // Guardar constantemente
             inputs[i].onValueChanged.AddListener(value =>
             {
                 RegisterInputAnswer(index, value);
                 CheckInputsAndToggleContinue2();
             });
 
-            // Log solo cuando el usuario termine de editar un campo
             inputs[i].onEndEdit.AddListener(_ =>
             {
                 TryLogActivity2Once();
             });
 
-            // Inicializa desde el texto actual (si venía precargado)
             RegisterInputAnswer(index, inputs[i].text);
         }
 
+        // ===== Actividad 3 =====
         if (continueButton3 != null)
             continueButton3.SetActive(false);
 
-        // Suscribirse al evento del dibujo (si Linea ya existe)
-        if (Linea.Instance != null)
-        {
-            Linea.Instance.OnStrokeCountChanged += HandleStrokeCountChanged;
-            HandleStrokeCountChanged(Linea.Instance.StrokeCount); // estado inicial
-        }
+        StartCoroutine(AttachToLineaWhenReady());
+
+        // ===== Actividad 4 =====
+        if (continueButton4 != null)
+            continueButton4.SetActive(false);
+
+        // estado inicial act4
+        ClearActivity4Selection();
+        ClearActivity4Audio();
 
         CheckInputsAndToggleContinue2();
-        TryLogActivity2Once(); // por si ya venía todo lleno
+        TryLogActivity2Once();
+        UpdateContinue4();
     }
 
     // =========================
@@ -160,7 +177,6 @@ public class Module1ActivityManager : MonoBehaviour
         string clean = value == null ? "" : value.Trim();
         answersByInput[inputIndex] = clean;
 
-        // Si se borra algo, permite volver a loguear al completar
         if (!AreAllInputsFilled())
             activity2WasLogged = false;
     }
@@ -202,20 +218,19 @@ public class Module1ActivityManager : MonoBehaviour
         return string.Join(" | ", parts);
     }
 
+    // =========================
+    // Actividad 3 (Dibujo)
+    // =========================
     private void HandleStrokeCountChanged(int count)
     {
         bool canContinue = count >= minLinesForContinue3;
 
         if (continueButton3 != null)
             continueButton3.SetActive(canContinue);
-
-        // (Opcional) Debug
-        // if (canContinue) Debug.Log($"? Actividad 3 completa: {count} trazos.");
     }
 
     private void OnDestroy()
     {
-        // si ya tienes OnDestroy, integra esto dentro
         if (Linea.Instance != null)
             Linea.Instance.OnStrokeCountChanged -= HandleStrokeCountChanged;
     }
@@ -224,5 +239,115 @@ public class Module1ActivityManager : MonoBehaviour
     {
         Activity3PngBytes = pngBytes;
         Debug.Log($"? Actividad 3 guardada en memoria. Bytes: {(pngBytes != null ? pngBytes.Length : 0)}");
+    }
+
+    private System.Collections.IEnumerator AttachToLineaWhenReady()
+    {
+        while (Linea.Instance == null)
+            yield return null;
+
+        Linea.Instance.OnStrokeCountChanged += HandleStrokeCountChanged;
+        HandleStrokeCountChanged(Linea.Instance.StrokeCount);
+
+        Debug.Log("[Manager] Suscrito a Linea.OnStrokeCountChanged");
+    }
+
+    // =========================
+    // Actividad 4 (Selección + Audio)
+    // =========================
+    public void SetActivity4SelectedOption(string optionId)
+    {
+        Activity4SelectedOptionId = optionId == null ? "" : optionId.Trim();
+        UpdateContinue4();
+    }
+
+    public void SetActivity4AudioBase64(string base64)
+    {
+        Activity4AudioBase64 = base64 ?? "";
+        Activity4AudioBytes = null;
+
+        // ? Si ya llegó base64, confirmamos flag también
+        Activity4HasAudioFlag = !string.IsNullOrEmpty(Activity4AudioBase64);
+
+        UpdateContinue4();
+    }
+
+    public void SetActivity4AudioBytes(byte[] bytes)
+    {
+        Activity4AudioBytes = bytes;
+        Activity4AudioBase64 = "";
+
+        Activity4HasAudioFlag = (Activity4AudioBytes != null && Activity4AudioBytes.Length > 0);
+
+        UpdateContinue4();
+    }
+
+    public void ClearActivity4Audio()
+    {
+        Activity4AudioBase64 = "";
+        Activity4AudioBytes = null;
+        Activity4HasAudioFlag = false;
+        UpdateContinue4();
+    }
+
+    public void ClearActivity4Selection()
+    {
+        Activity4SelectedOptionId = "";
+        UpdateContinue4();
+    }
+
+    // ? Usa el flag como fuente de verdad (y también soporta base64/bytes)
+    public bool Activity4HasAudio()
+    {
+        if (Activity4HasAudioFlag) return true;
+
+        bool hasBase64 = !string.IsNullOrEmpty(Activity4AudioBase64);
+        bool hasBytes = Activity4AudioBytes != null && Activity4AudioBytes.Length > 0;
+        return hasBase64 || hasBytes;
+    }
+
+    public bool Activity4HasSelection()
+    {
+        return !string.IsNullOrEmpty(Activity4SelectedOptionId);
+    }
+
+    public bool Activity4IsComplete()
+    {
+        return Activity4HasSelection() && Activity4HasAudio();
+    }
+
+    private void UpdateContinue4()
+    {
+        if (continueButton4 != null)
+            continueButton4.SetActive(Activity4IsComplete());
+    }
+
+    // ? IMPORTANTE: este método vuelve a ser el “gatillo” para WebAudioRecorderUI
+    // Cuando detectes WA_HasAudio()==1, llama SetActivity4HasAudio(true)
+    // y el botón se activa aunque base64 llegue un frame después.
+    public void SetActivity4HasAudio(bool hasAudio)
+    {
+        Activity4HasAudioFlag = hasAudio;
+
+        if (!hasAudio)
+        {
+            Activity4AudioBase64 = "";
+            Activity4AudioBytes = null;
+        }
+
+        UpdateContinue4();
+    }
+
+    public System.Collections.Generic.Dictionary<int, string> GetActivity1PlacementsCopy()
+    {
+        return new System.Collections.Generic.Dictionary<int, string>(placedBySlot);
+    }
+
+    public string[] GetActivity2AnswersArray()
+    {
+        var arr = new string[5];
+        for (int i = 0; i < 5; i++)
+            arr[i] = answersByInput.ContainsKey(i) ? (answersByInput[i] ?? "") : "";
+        return arr;
     }
 }

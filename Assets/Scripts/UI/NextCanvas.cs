@@ -58,4 +58,9 @@ public class NextCanvas : MonoBehaviour
     {
         canva1.SetActive(true);
     }
+
+    public void BacktoLobby()
+    {
+        SceneManager.LoadScene("Estudiante");
+    }
 }
