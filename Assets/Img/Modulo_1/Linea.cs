@@ -8,6 +8,9 @@ public class Linea : MonoBehaviour
 {
     public static Linea Instance { get; private set; }
 
+    public int StrokeCount { get; private set; } = 0;
+    public System.Action<int> OnStrokeCountChanged;
+
     [Header("Prefab / line settings")]
     [SerializeField] private LineRenderer linePrefab;
     [SerializeField] private float minDistance = 0.1f;
@@ -110,6 +113,9 @@ public class Linea : MonoBehaviour
         // ? registrar para Undo global (líneas + stickers)
         RegisterUndo(currentLine.gameObject);
 
+        StrokeCount++;
+        OnStrokeCountChanged?.Invoke(StrokeCount);
+
         previousPosition = Vector3.positiveInfinity;
     }
 
@@ -157,15 +163,18 @@ public class Linea : MonoBehaviour
     public void UndoLast()
     {
         currentLine = null;
-
         if (undoStack.Count == 0) return;
 
         var go = undoStack.Pop();
         if (go == null) return;
 
-        // Si era una línea, también la sacamos del listado de strokes
         var lr = go.GetComponent<LineRenderer>();
-        if (lr != null) strokes.Remove(lr);
+        if (lr != null)
+        {
+            strokes.Remove(lr);
+            StrokeCount = Mathf.Max(0, StrokeCount - 1);
+            OnStrokeCountChanged?.Invoke(StrokeCount);
+        }
 
         Destroy(go);
     }
@@ -182,6 +191,9 @@ public class Linea : MonoBehaviour
         }
 
         strokes.Clear();
+        StrokeCount = 0;
+        OnStrokeCountChanged?.Invoke(StrokeCount);
+
         nextOrderInLayer = startOrderInLayer;
     }
 

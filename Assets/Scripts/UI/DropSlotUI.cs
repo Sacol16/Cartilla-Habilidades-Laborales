@@ -1,7 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DropSlotUI : MonoBehaviour, IDropHandler
+public class DropSlotUI : MonoBehaviour, IDropHandler, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
 {
     [Header("Index")]
     [Tooltip("Índice de este slot (0..5). Debe coincidir con el orden que maneja el Manager.")]
@@ -16,10 +17,18 @@ public class DropSlotUI : MonoBehaviour, IDropHandler
     public AudioClip placedSfx;
 
     [Header("Particles")]
-    public ParticleSystem confettiFx;          // Asigna aquí el ParticleSystem (o uno global compartido)
-    public bool spawnAtSlotCenter = true;      // Si está activo, lo posiciona en el centro del slot (world)
+    public ParticleSystem confettiFx;
+    public bool spawnAtSlotCenter = true;
+
+    [Header("Hold-to-Undo")]
+    [Tooltip("Segundos que debes mantener presionado para deshacer (undo).")]
+    public float holdSeconds = 3f;
 
     private bool occupied = false;
+    private DraggableUI currentItem;
+
+    private Coroutine holdRoutine;
+    private bool isHolding = false;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -38,9 +47,10 @@ public class DropSlotUI : MonoBehaviour, IDropHandler
         // Snap
         draggable.SnapTo(transform, lockInPlace: true);
 
+        currentItem = draggable;
         if (onlyOneItem) occupied = true;
 
-        // ? Avisar al manager (guardar qué item quedó en este slot)
+        // Avisar al manager
         if (Module1ActivityManager.Instance != null)
         {
             Module1ActivityManager.Instance.RegisterPlacement(slotIndex, dragged.name);
@@ -65,9 +75,91 @@ public class DropSlotUI : MonoBehaviour, IDropHandler
         }
     }
 
-    // (Opcional) Para que el Manager pueda reiniciar el estado del slot si luego haces "Reset"
+    // ? LONG PRESS START
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (!occupied || currentItem == null) return;
+
+        // iniciar hold
+        CancelHold(); // por si quedaba uno colgado
+        isHolding = true;
+        holdRoutine = StartCoroutine(HoldToUndoRoutine());
+    }
+
+    // ? LONG PRESS CANCEL
+    public void OnPointerUp(PointerEventData eventData) => CancelHold();
+    public void OnPointerExit(PointerEventData eventData) => CancelHold();
+
+    private IEnumerator HoldToUndoRoutine()
+    {
+        float t = 0f;
+
+        // Asegura que arranque en 1
+        currentItem.SetAlpha(1f);
+
+        while (t < holdSeconds)
+        {
+            if (!isHolding || currentItem == null)
+                yield break;
+
+            t += Time.unscaledDeltaTime; // UI: mejor con unscaled por si usas Time.timeScale
+            float a = Mathf.Lerp(1f, 0f, t / holdSeconds);
+            currentItem.SetAlpha(a);
+
+            yield return null;
+        }
+
+        // Completó los 3s -> UNDO
+        DoUndo();
+    }
+
+    private void CancelHold()
+    {
+        if (!isHolding && holdRoutine == null) return;
+
+        isHolding = false;
+
+        if (holdRoutine != null)
+        {
+            StopCoroutine(holdRoutine);
+            holdRoutine = null;
+        }
+
+        // Si no llegó a 3s, vuelve a 100% opacidad
+        if (currentItem != null)
+            currentItem.SetAlpha(1f);
+    }
+
+    private void DoUndo()
+    {
+        // detener rutina
+        isHolding = false;
+        if (holdRoutine != null)
+        {
+            StopCoroutine(holdRoutine);
+            holdRoutine = null;
+        }
+
+        if (currentItem != null)
+        {
+            currentItem.ReturnToStart();
+            currentItem = null;
+        }
+
+        occupied = false;
+
+        // Avisar al manager que se vació el slot (ajusta según tu manager)
+        if (Module1ActivityManager.Instance != null)
+        {
+            // Opción simple: guardar vacío
+            Module1ActivityManager.Instance.RegisterPlacement(slotIndex, "");
+        }
+    }
+
     public void ResetSlot()
     {
+        CancelHold();
         occupied = false;
+        currentItem = null;
     }
 }

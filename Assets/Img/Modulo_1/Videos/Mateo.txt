@@ -1,0 +1,84 @@
+﻿1
+00:00:00,040 --> 00:00:01,840
+Mateo es un joven de 14 años.
+
+2
+00:00:01,840 --> 00:00:04,960
+Está en 6.º grado
+porque tuvo que dejar sus estudios
+
+3
+00:00:04,960 --> 00:00:07,960
+durante algún
+tiempo por circunstancias de su vida.
+
+4
+00:00:07,960 --> 00:00:10,200
+Tiene una tarea que para él es difícil.
+
+5
+00:00:10,200 --> 00:00:13,200
+Se trata de leer un texto
+y responder varias preguntas.
+
+6
+00:00:13,400 --> 00:00:14,480
+No sabe qué hacer.
+
+7
+00:00:14,480 --> 00:00:17,480
+Le da pereza leérselo,
+pues no está acostumbrado a estudiar.
+
+8
+00:00:17,640 --> 00:00:20,520
+Tiene varias opciones para elegir uno.
+
+9
+00:00:20,520 --> 00:00:23,400
+Un amigo
+le propone que a cambio de una camiseta él
+
+10
+00:00:23,400 --> 00:00:24,680
+le haría la tarea completa.
+
+11
+00:00:24,680 --> 00:00:28,880
+Justo esa es una de las camisetas
+favoritas de Mateo, pero se la regala.
+
+12
+00:00:29,120 --> 00:00:30,560
+Dos. Se esfuerza.
+
+13
+00:00:30,560 --> 00:00:34,880
+Vence la pereza e intenta leer el texto
+y responde dentro de sus posibilidades
+
+14
+00:00:34,880 --> 00:00:35,920
+lo que ha entendido.
+
+15
+00:00:35,920 --> 00:00:39,720
+Tres Busca a una profesora
+que es muy amable con él para que la ayude
+
+16
+00:00:39,720 --> 00:00:40,680
+a resolver la tarea.
+
+17
+00:00:40,680 --> 00:00:45,600
+Cuatro No hace nada, ni lee la lectura
+ni responde ninguna pregunta.
+
+18
+00:00:46,000 --> 00:00:48,200
+Llega a su clase sin el trabajo.
+
+19
+00:00:48,200 --> 00:00:49,600
+¿Cómo resolverías este caso?
