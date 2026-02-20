@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Cartilla Habilidades laborales/Modulo 1.unity
     guid: 83367a2479fe2da45a981e90366dc6a1
+  - enabled: 1
+    path: Assets/Scenes/Cartilla Habilidades laborales/Modulo 1F.unity
+    guid: c335e25c2c714d844a8b42546be72f5b
   m_configObjects: {}
