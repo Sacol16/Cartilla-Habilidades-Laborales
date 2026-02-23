@@ -194,7 +194,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.3, y: 2.3}
+    oldSize: {x: 3.77, y: 3.11}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -244,7 +244,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1717185346, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: 468857901, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -740,7 +740,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.67, y: 3.28}
+    oldSize: {x: 3.85, y: 2.74}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -790,7 +790,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -2116764149, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: 1091799298, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6666,7 +6666,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &163762130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6772,7 +6772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 304319693}
   subtitleText: {fileID: 1472246879}
-  srtFile: {fileID: 4900000, guid: 1eb338706b6f91c439e0e411f26796e8, type: 3}
+  srtFile: {fileID: 4900000, guid: 4b2d0c13083585448b5bcc672eb27725, type: 3}
 --- !u!1 &170432824
 GameObject:
   m_ObjectHideFlags: 0
@@ -8518,7 +8518,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 304319691}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: e2d9acd9ac29d8c43b8068fd8599c667, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: b1ff5dccde032604b9058980941a3c99, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -14296,7 +14296,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 384075605}
   m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 5f9185f315fecc5458c8d58d9b8b2491, type: 3}
+  m_VideoClip: {fileID: 32900000, guid: d4936b7f85408d84fa9441e8e88392ef, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -14575,7 +14575,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3a8d2c061545eee42b10dc2cf8596614, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ac38df55cb38ef949a127ba5fb931d81, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14961,8 +14961,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Busca a una profesora, que es muy amable con \xE9l, para que le ayude
-    a resolver la tarea."
+  m_text: "Una empresa le ofrece ser vendedora en su almac\xE9n con ganancias\r\ninteresantes,
+    adem\xE1s de comisiones por las ventas."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15632,8 +15632,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1013099163}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.2887755, y: 0}
-  m_AnchorMax: {x: 0.2887755, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -21538,9 +21538,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Un amigo le propone que a cambio de una camiseta, \xE9l le har\xEDa la
-    tarea completa. Justo esa es una de las camisetas favoritas de Mateo, pero se
-    la regala."
+  m_text: "Le ofrecen un apoyo con la mitad de la matr\xEDcula para estudiar ventas
+    y\r\nmercadeo con posibilidad de comenzar a trabajar a partir del 2\xBA mes de
+    clases."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -21822,7 +21822,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.15, y: 2.33}
+    oldSize: {x: 4.04, y: 2.99}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -21872,7 +21872,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1379996591, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: -81807865, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -22593,7 +22593,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a8f75f2d997ee2a4ca3879f7cf87ffbd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a2c2484d93e99664fae1f171aa7fbc0e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -23490,7 +23490,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.96, y: 2.09}
+    oldSize: {x: 4.04, y: 2.74}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -23540,7 +23540,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1861047013, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: 2027469993, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -23623,7 +23623,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bbec0322e1c578e47b4a5637f1b06b63, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 535ef5e8f2d11f041bc99f948ea64381, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -24531,7 +24531,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4.6, y: 2.62}
+    oldSize: {x: 4.78, y: 2.86}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -24581,7 +24581,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 24025275, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: 807782051, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -24775,7 +24775,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 384075606}
   subtitleText: {fileID: 94807514}
-  srtFile: {fileID: 4900000, guid: 7d6cd5a1fa181af4eb536784785fe46e, type: 3}
+  srtFile: {fileID: 4900000, guid: 7b143102dce12754faa873ffc4c384ca, type: 3}
 --- !u!114 &1174876647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24999,8 +24999,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: No hace nada, ni lee la lectura ni responde ninguna pregunta, llega a su
-    clase sin el trabajo.
+  m_text: 'Una amiga de su madrina les propone a las dos, a ella y a la madrina,
+
+    poner
+    una tienda en la casa y que Antonia sea quien la administre.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -25439,7 +25441,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4.95, y: 3.05}
+    oldSize: {x: 2.69, y: 2.83}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -25489,7 +25491,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1114006369, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: -1145930899, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -25548,7 +25550,7 @@ RectTransform:
   m_Father: {fileID: 881437704}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25623,7 +25625,7 @@ RectTransform:
   m_Father: {fileID: 735034451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25995,7 +25997,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 31602bca1f3850340bf34395a062220c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c45c9ccd936141140a19d3da0bb9e767, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -26085,7 +26087,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.57, y: 1.9}
+    oldSize: {x: 3.53, y: 3.38}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -26135,7 +26137,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 109996424, guid: 05db8b0224f14214696d8ec1adad4ecc, type: 3}
+  m_Sprite: {fileID: 2071361678, guid: 028495afec5e0894186d219d50f50769, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -26275,7 +26277,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1350384097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33078,7 +33080,7 @@ RectTransform:
   m_Father: {fileID: 226486005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.2887755, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -34507,8 +34509,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Se esfuerza, vence la pereza e intenta leer el texto y responder dentro
-    de sus posibilidades lo que ha entendido.
+  m_text: "Le pagan la matr\xEDcula completa de educaci\xF3n preescolar con la condici\xF3n\r\nde
+    que siempre sea la mejor estudiante del curso."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -34987,7 +34989,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: afe6e70beeee4e84089078845624479e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2636c97ee3787634ebaa80cba8eb3b8c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

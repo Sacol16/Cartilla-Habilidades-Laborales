@@ -9,10 +9,10 @@ public class NextCanvas : MonoBehaviour
     public GameObject canva1;
     public GameObject canva2;
 
-    [SerializeField] private GameObject subtitulo;   // panel/texto de subtítulos
-    [SerializeField] private Button subtituloBtn;    // botón que activa/desactiva
+    [SerializeField] private GameObject subtitulo;   // panel/texto de subtï¿½tulos
+    [SerializeField] private Button subtituloBtn;    // botï¿½n que activa/desactiva
 
-    [Header("Colores del botón")]
+    [Header("Colores del botï¿½n")]
     [SerializeField] private Color colorOn = Color.green;
     [SerializeField] private Color colorOff = Color.red;
 
@@ -26,12 +26,12 @@ public class NextCanvas : MonoBehaviour
         // Toggle
         subtitulo.SetActive(!activos);
 
-        // Cambiar color del botón según estado final
+        // Cambiar color del botï¿½n segï¿½n estado final
         bool ahoraActivos = subtitulo.activeSelf;
         subtituloBtn.image.color = ahoraActivos ? colorOn : colorOff;
     }
 
-    // Opcional: para que al iniciar el juego el botón ya refleje el estado real
+    // Opcional: para que al iniciar el juego el botï¿½n ya refleje el estado real
     private void Start()
     {
         if (subtitulo != null && subtituloBtn != null)
@@ -47,6 +47,11 @@ public class NextCanvas : MonoBehaviour
     public void Modulo1()
     {
         SceneManager.LoadScene("Modulo 1");
+    }
+
+    public void Modulo2()
+    {
+        SceneManager.LoadScene("Modulo 2");
     }
 
     public void HideCanva()

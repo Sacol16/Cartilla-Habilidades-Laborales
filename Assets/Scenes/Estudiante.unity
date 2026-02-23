@@ -483,7 +483,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &478273523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -924,7 +924,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 571516291}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1420523166}
+        m_TargetAssemblyTypeName: NextCanvas, Assembly-CSharp
+        m_MethodName: Modulo1
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &571516291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1926,6 +1938,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canva1: {fileID: 943369390}
   canva2: {fileID: 478273522}
+  subtitulo: {fileID: 0}
+  subtituloBtn: {fileID: 0}
+  colorOn: {r: 0, g: 1, b: 0, a: 1}
+  colorOff: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1559380370
 GameObject:
   m_ObjectHideFlags: 0
@@ -2614,7 +2630,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2014611416}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1420523166}
+        m_TargetAssemblyTypeName: NextCanvas, Assembly-CSharp
+        m_MethodName: Modulo2
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2014611416
 MonoBehaviour:
   m_ObjectHideFlags: 0
