@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 09485e66a89cf554db4dae146710a133
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - apiConfig: {fileID: 11400000, guid: b1544e215f1386e45831decebbbba877, type: 2}
+  - panelRoot: {instanceID: 0}
+  - titleText: {instanceID: 0}
+  - contentParent: {instanceID: 0}
+  - studentButtonPrefab: {fileID: 8933786248551310835, guid: 27439f5a39d0ae14ba2113076e88fa38, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -4,5 +4,23 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Inicio.unity
+    guid: e4b1bb8b0e619f548bc26c527cadcc87
+  - enabled: 1
+    path: Assets/Scenes/Facilitador.unity
+    guid: c2cfdaf0287b99e4aad0d9416ad5accb
+  - enabled: 1
+    path: Assets/Scenes/Estudiante.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Cartilla Habilidades laborales/Modulo 1.unity
+    guid: 83367a2479fe2da45a981e90366dc6a1
+  - enabled: 1
+    path: Assets/Scenes/Cartilla Habilidades laborales/Modulo 2.unity
+    guid: c12b87f471a52c74d82daa81b071e705
+  - enabled: 1
+    path: Assets/Scenes/Cartilla Habilidades laborales/Modulo 1F.unity
+    guid: c335e25c2c714d844a8b42546be72f5b
   m_configObjects: {}
