@@ -1,145 +1,117 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(SpriteRenderer))]
-[RequireComponent(typeof(Collider2D))]
-public class StickerDragWorld : MonoBehaviour
+public class StickerDragUI : MonoBehaviour,
+    IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("Drop area (world)")]
-    [SerializeField] private Collider2D drawAreaCollider;
+    [Header("Drop area (UI)")]
+    [SerializeField] private RectTransform uiDrawArea;
+    [SerializeField] private Canvas canvas;
 
     [Header("Behavior")]
-    [SerializeField] private bool cloneOnDrag = true;       // tipo sticker-pack
+    [SerializeField] private bool cloneOnDrag = true;
     [SerializeField] private bool destroyIfDroppedOutside = true;
 
-    [Header("Placement")]
-    [SerializeField] private bool snapZToZero = true;       // útil si tu escena usa plano z=0
-    [SerializeField] private float dragZ = 0f;              // z mientras arrastras (si estás en 2.5D)
+    private RectTransform rect;
+    private RectTransform canvasRect;
 
-    private Camera cam;
-    private bool dragging;
-
-    // Si clonamos, movemos el clon. Si no, movemos este mismo.
     private GameObject draggedObj;
-    private SpriteRenderer draggedSR;
-    private Collider2D draggedCol;
+    private RectTransform draggedRect;
 
-    // Para devolver si no se pega (cuando cloneOnDrag=false)
-    private Vector3 originalPos;
+    private Vector2 pointerOffset;
+    private Vector2 originalPos;
     private Transform originalParent;
 
     private void Awake()
     {
-        cam = Camera.main;
+        rect = GetComponent<RectTransform>();
 
-        // Recomendación: el collider del sticker no debe bloquear clicks de otros objetos.
-        // Lo usamos igual para interacción, pero en drag no necesitamos colisiones físicas.
-        // Si quieres, deja el collider como Trigger.
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
+        if (canvas == null)
+            canvas = GetComponentInParent<Canvas>();
+
+        canvasRect = canvas.GetComponent<RectTransform>();
     }
 
-    private void OnMouseDown()
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!cam || drawAreaCollider == null) return;
-
-        dragging = true;
-
-        originalPos = transform.position;
+        originalPos = rect.anchoredPosition;
         originalParent = transform.parent;
 
         if (cloneOnDrag)
         {
-            draggedObj = Instantiate(gameObject);
+            draggedObj = Instantiate(gameObject, canvas.transform);
             draggedObj.name = gameObject.name + "_Placed";
 
-            draggedSR = draggedObj.GetComponent<SpriteRenderer>();
-            draggedCol = draggedObj.GetComponent<Collider2D>();
+            var cloneScript = draggedObj.GetComponent<StickerDragUI>();
+            cloneScript.cloneOnDrag = false;
+            cloneScript.destroyIfDroppedOutside = false;
+            cloneScript.uiDrawArea = uiDrawArea;
+            cloneScript.canvas = canvas;
 
-            // No queremos que el clon vuelva a actuar como “paleta” (arrastrar copias infinitas de copias)
-            // Entonces desactivamos cloneOnDrag en el clon:
-            var cloneScript = draggedObj.GetComponent<StickerDragWorld>();
-            if (cloneScript != null)
-            {
-                cloneScript.cloneOnDrag = false;
-                cloneScript.destroyIfDroppedOutside = false; // ya es colocado/arrastrable si quisieras
-                cloneScript.drawAreaCollider = drawAreaCollider;
-            }
+            draggedRect = draggedObj.GetComponent<RectTransform>();
         }
         else
         {
             draggedObj = gameObject;
-            draggedSR = GetComponent<SpriteRenderer>();
-            draggedCol = GetComponent<Collider2D>();
+            draggedRect = rect;
         }
 
-        // Evita que el collider interfiera durante drag (opcional)
-        if (draggedCol != null) draggedCol.enabled = false;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            eventData.position,
+            eventData.pressEventCamera,
+            out var localPointerPos
+        );
+
+        pointerOffset = draggedRect.anchoredPosition - localPointerPos;
     }
 
-    private void OnMouseDrag()
+    public void OnDrag(PointerEventData eventData)
     {
-        if (!dragging || draggedObj == null || !cam) return;
+        if (draggedRect == null) return;
 
-        Vector3 mp = Input.mousePosition;
-        mp.z = Mathf.Abs(cam.transform.position.z - dragZ);
-        Vector3 world = cam.ScreenToWorldPoint(mp);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRect,
+            eventData.position,
+            eventData.pressEventCamera,
+            out var localPointerPos
+        );
 
-        if (snapZToZero) world.z = 0f;
-
-        draggedObj.transform.position = world;
+        draggedRect.anchoredPosition = localPointerPos + pointerOffset;
     }
 
-    private void OnMouseUp()
+    public void OnEndDrag(PointerEventData eventData)
     {
-        if (!dragging || draggedObj == null || drawAreaCollider == null) return;
+        if (draggedRect == null || uiDrawArea == null) return;
 
-        dragging = false;
+        bool inside = RectTransformUtility.RectangleContainsScreenPoint(
+            uiDrawArea,
+            eventData.position,
+            eventData.pressEventCamera
+        );
 
-        // Validar si soltó dentro del área
-        Vector3 pos = draggedObj.transform.position;
-        bool inside = drawAreaCollider.OverlapPoint(pos);
-
-        if (inside)
-        {
-            // ? Asignar sorting layer/order para apilar igual que líneas
-            if (Linea.Instance != null && draggedSR != null)
-            {
-                // Usa la sorting layer del linePrefab si quieres consistencia
-                draggedSR.sortingLayerID = Linea.Instance.GetSortingLayerID();
-                draggedSR.sortingOrder = Linea.Instance.AllocateNextOrderInLayer();
-
-                // ? Registrar Undo global
-                Linea.Instance.RegisterUndo(draggedObj);
-            }
-
-            // Habilitar collider ya pegado (trigger) por si quieres seleccionarlo luego
-            if (draggedCol != null) draggedCol.enabled = true;
-        }
-        else
+        if (!inside)
         {
             if (cloneOnDrag)
             {
-                // Si era clon y cae fuera: destruirlo
                 Destroy(draggedObj);
             }
             else
             {
-                // Si estás moviendo el original
                 if (destroyIfDroppedOutside)
                 {
                     Destroy(draggedObj);
                 }
                 else
                 {
-                    draggedObj.transform.position = originalPos;
-                    draggedObj.transform.SetParent(originalParent, true);
-                    if (draggedCol != null) draggedCol.enabled = true;
+                    draggedRect.anchoredPosition = originalPos;
+                    draggedRect.SetParent(originalParent, true);
                 }
             }
         }
 
         draggedObj = null;
-        draggedSR = null;
-        draggedCol = null;
+        draggedRect = null;
     }
 }
