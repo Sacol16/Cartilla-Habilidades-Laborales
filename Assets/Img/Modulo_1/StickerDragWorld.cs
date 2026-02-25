@@ -13,6 +13,13 @@ public class StickerDragUI : MonoBehaviour,
     [SerializeField] private bool cloneOnDrag = true;
     [SerializeField] private bool destroyIfDroppedOutside = true;
 
+    [Header("Lock after drop")]
+    [Tooltip("Si es true, al soltar dentro del área el sticker queda fijo y no se puede mover más.")]
+    [SerializeField] private bool lockAfterSuccessfulDrop = true;
+
+    [Tooltip("Si es true, desactiva raycast del Image al quedar fijo (para que no bloquee clicks).")]
+    [SerializeField] private bool disableRaycastWhenLocked = true;
+
     private RectTransform rect;
     private RectTransform canvasRect;
 
@@ -35,6 +42,9 @@ public class StickerDragUI : MonoBehaviour,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // Si este sticker ya quedó fijo, no permitir drag
+        if (!enabled) return;
+
         originalPos = rect.anchoredPosition;
         originalParent = transform.parent;
 
@@ -44,10 +54,16 @@ public class StickerDragUI : MonoBehaviour,
             draggedObj.name = gameObject.name + "_Placed";
 
             var cloneScript = draggedObj.GetComponent<StickerDragUI>();
-            cloneScript.cloneOnDrag = false;
-            cloneScript.destroyIfDroppedOutside = false;
-            cloneScript.uiDrawArea = uiDrawArea;
-            cloneScript.canvas = canvas;
+            if (cloneScript != null)
+            {
+                // El clon NO debe generar más clones
+                cloneScript.cloneOnDrag = false;
+                cloneScript.destroyIfDroppedOutside = false;
+                cloneScript.uiDrawArea = uiDrawArea;
+                cloneScript.canvas = canvas;
+                cloneScript.lockAfterSuccessfulDrop = lockAfterSuccessfulDrop;
+                cloneScript.disableRaycastWhenLocked = disableRaycastWhenLocked;
+            }
 
             draggedRect = draggedObj.GetComponent<RectTransform>();
         }
@@ -65,6 +81,9 @@ public class StickerDragUI : MonoBehaviour,
         );
 
         pointerOffset = draggedRect.anchoredPosition - localPointerPos;
+
+        // Que se vea por encima mientras arrastras
+        draggedRect.SetAsLastSibling();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -91,8 +110,31 @@ public class StickerDragUI : MonoBehaviour,
             eventData.pressEventCamera
         );
 
-        if (!inside)
+        if (inside)
         {
+            // ? Registrar Undo cuando se coloca correctamente
+            if (Linea.Instance != null && draggedObj != null)
+            {
+                Linea.Instance.RegisterUndo(draggedObj);
+            }
+
+            // ? Bloquear para que no se pueda mover después de colocarlo
+            if (lockAfterSuccessfulDrop && draggedObj != null)
+            {
+                var dragScript = draggedObj.GetComponent<StickerDragUI>();
+                if (dragScript != null)
+                    dragScript.enabled = false;
+
+                if (disableRaycastWhenLocked)
+                {
+                    var img = draggedObj.GetComponent<Image>();
+                    if (img != null) img.raycastTarget = false;
+                }
+            }
+        }
+        else
+        {
+            // Fuera del área: mismo comportamiento que ya tenías
             if (cloneOnDrag)
             {
                 Destroy(draggedObj);

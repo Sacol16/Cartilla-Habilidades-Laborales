@@ -3,12 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Good
+  - Bad
+  - FallingItem
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - camera
   - Water
   - UI
   - 
