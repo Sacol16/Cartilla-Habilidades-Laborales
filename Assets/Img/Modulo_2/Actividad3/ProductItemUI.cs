@@ -1,19 +1,23 @@
+// ===========================
+// ProductItemUI.cs
+// - Arrastrable con ID de producto
+// ===========================
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
-public class ConveyorPieceDraggableUI : MonoBehaviour,
-    IBeginDragHandler, IDragHandler, IEndDragHandler
+public class ProductItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("Piece")]
-    public string pieceId;
+    [Header("Product")]
+    public string productId; // "pan", "camiseta", "cuaderno"
 
     [Header("Refs")]
     [SerializeField] private Canvas canvas;
 
     private RectTransform rect;
-    private CanvasGroup canvasGroup;   // para bloquear raycasts
+    private CanvasGroup canvasGroup;
     private Transform originalParent;
     private Vector2 originalAnchoredPos;
 
@@ -24,7 +28,6 @@ public class ConveyorPieceDraggableUI : MonoBehaviour,
         rect = GetComponent<RectTransform>();
         if (canvas == null) canvas = GetComponentInParent<Canvas>();
 
-        // CanvasGroup asegura que el DropZone reciba el raycast mientras arrastras
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
@@ -32,31 +35,21 @@ public class ConveyorPieceDraggableUI : MonoBehaviour,
     public void OnBeginDrag(PointerEventData eventData)
     {
         DroppedOnValidZone = false;
-
         originalParent = rect.parent;
         originalAnchoredPos = rect.anchoredPosition;
 
-        // Mientras arrastras, NO bloquees raycasts
-        canvasGroup.blocksRaycasts = false;
-
-        // Traer al frente
+        canvasGroup.blocksRaycasts = false; // clave para drop
         rect.SetParent(canvas.transform, true);
-
-        Debug.Log($"[Drag] Begin: {name} id={pieceId}");
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (canvas == null) return;
 
-        // Movimiento estable en UI
         RectTransform canvasRect = canvas.transform as RectTransform;
 
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
-                eventData.position,
-                eventData.pressEventCamera,
-                out Vector2 localPoint))
+            canvasRect, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
         {
             rect.anchoredPosition = localPoint;
         }
@@ -64,31 +57,18 @@ public class ConveyorPieceDraggableUI : MonoBehaviour,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Re-habilitar raycasts
         canvasGroup.blocksRaycasts = true;
-
-        Debug.Log($"[Drag] End: {name} valid={DroppedOnValidZone}");
 
         if (!DroppedOnValidZone)
             SnapBack();
     }
 
-    public void Consume()
-    {
-        DroppedOnValidZone = true;
-        Destroy(gameObject);
-    }
+    public void MarkDroppedValid() => DroppedOnValidZone = true;
 
     public void SnapBack()
     {
-        DroppedOnValidZone = true; // para que no haga doble lógica
+        DroppedOnValidZone = true;
         rect.SetParent(originalParent, true);
         rect.anchoredPosition = originalAnchoredPos;
-    }
-
-    // Llamado por el dropzone cuando fue colocado (para que EndDrag no lo devuelva)
-    public void MarkDroppedValid()
-    {
-        DroppedOnValidZone = true;
     }
 }

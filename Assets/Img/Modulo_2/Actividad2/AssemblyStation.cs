@@ -1,24 +1,20 @@
-// ===========================
-// AssemblyStation.cs
-// - Define el orden de 3 piezas
-// - Actualiza sprite por progreso (0,1,2,3)
-// ===========================
-
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AssemblyStation : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private Image assembledImage; // Imagen del objeto armado
+    [SerializeField] private Image assembledImage;
 
     [Header("Order (3 pieces)")]
-    [Tooltip("IDs de las piezas en orden correcto. Ej: RobotHead, RobotBody, RobotLegs")]
     [SerializeField] private string[] requiredPieceIds = new string[3];
 
     [Header("Progress Sprites (0..3)")]
-    [Tooltip("sprites[0]=vacío, [1]=paso1, [2]=paso2, [3]=completo")]
     [SerializeField] private Sprite[] progressSprites = new Sprite[4];
+
+    [Header("Feedback Messages")]
+    [SerializeField] private string wrongPieceMessage = "Esa pieza no pertenece a este objeto.";
+    [SerializeField] private string wrongOrderMessage = "Orden incorrecto. Intenta primero la siguiente pieza.";
 
     public bool IsComplete { get; private set; }
     public int CurrentStep { get; private set; } = 0;
@@ -30,15 +26,44 @@ public class AssemblyStation : MonoBehaviour
         RefreshVisual();
     }
 
-    public bool TryPlacePiece(string pieceId)
+    // NUEVO: devuelve ok y un mensaje si falla
+    public bool TryPlacePiece(string pieceId, out string feedback)
     {
-        if (IsComplete) return false;
-        if (requiredPieceIds == null || requiredPieceIds.Length < 3) return false;
+        feedback = "";
 
-        // Validar orden
-        if (pieceId != requiredPieceIds[CurrentStep])
+        if (IsComplete)
+        {
+            feedback = "Esta mesa ya está completa.";
             return false;
+        }
 
+        if (requiredPieceIds == null || requiredPieceIds.Length < 3)
+        {
+            feedback = "Configuración inválida de la estación.";
+            return false;
+        }
+
+        // Si la pieza correcta para este paso NO coincide:
+        string expected = requiredPieceIds[CurrentStep];
+
+        if (pieceId != expected)
+        {
+            // Diferenciar: ¿es una pieza de este objeto pero en otro orden?
+            bool belongsToThisObject = false;
+            for (int i = 0; i < requiredPieceIds.Length; i++)
+            {
+                if (requiredPieceIds[i] == pieceId)
+                {
+                    belongsToThisObject = true;
+                    break;
+                }
+            }
+
+            feedback = belongsToThisObject ? wrongOrderMessage : wrongPieceMessage;
+            return false;
+        }
+
+        // Correcto
         CurrentStep++;
 
         if (CurrentStep >= 3)
