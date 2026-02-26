@@ -31,13 +31,14 @@ public class ModuleProgressDto
     public string moduleId;
     public float score;
     public bool done;
-    public ModuleDataDto data;   // <-- útil para recargar actividades
+    public ModuleDataDto data;   
 }
 
 [Serializable]
 public class ModuleDataDto
 {
     public Module1DataDto module1;
+    public Module3DataDto module3; 
 }
 
 [Serializable]
