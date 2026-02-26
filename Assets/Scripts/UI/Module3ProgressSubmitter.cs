@@ -11,7 +11,6 @@ public class Module3ProgressSubmitter : MonoBehaviour
     [Range(0, 100)]
     public int module3Score = 100;
 
-    [Tooltip("El moduleId que espera el backend. Si tu endpoint es /progress/modules/3, pon '3'.")]
     public string moduleId = "3";
 
     [Header("UI")]
@@ -76,12 +75,23 @@ public class Module3ProgressSubmitter : MonoBehaviour
 
     private UpsertModuleProgressRequest BuildRequestFromManager(Module3ActivityManager mgr)
     {
-        Dictionary<int, string> placements = mgr.GetActivity1PlacementsCopy();
-        var list = new List<SlotPlacementDto>();
+        Dictionary<int, string> placementsA1 = mgr.GetActivity1PlacementsCopy();
+        Dictionary<int, string> placementsA2 = mgr.GetActivity2PlacementsCopy();
 
-        foreach (var kv in placements)
+        var listA1 = new List<SlotPlacementDto>();
+        foreach (var kv in placementsA1)
         {
-            list.Add(new SlotPlacementDto
+            listA1.Add(new SlotPlacementDto
+            {
+                slotIndex = kv.Key,
+                itemObjectName = kv.Value ?? ""
+            });
+        }
+
+        var listA2 = new List<SlotPlacementDto>();
+        foreach (var kv in placementsA2)
+        {
+            listA2.Add(new SlotPlacementDto
             {
                 slotIndex = kv.Key,
                 itemObjectName = kv.Value ?? ""
@@ -96,7 +106,8 @@ public class Module3ProgressSubmitter : MonoBehaviour
             {
                 module3 = new Module3DataDto
                 {
-                    activity1 = list.ToArray()
+                    activity1 = listA1.ToArray(),
+                    activity2 = listA2.ToArray() // ✅ NUEVO
                 }
             }
         };

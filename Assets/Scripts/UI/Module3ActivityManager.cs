@@ -6,16 +6,19 @@ public class Module3ActivityManager : MonoBehaviour
 {
     public static Module3ActivityManager Instance { get; private set; }
 
-    [Header("Slots (arrástralos todos aquí)")]
+    // =========================================================
+    // ACTIVITY 1 (Organigrama) - TU LÓGICA ORIGINAL
+    // =========================================================
+    [Header("ACTIVITY 1 - Slots (arrástralos todos aquí)")]
     [SerializeField] private DropSlot[] slots;
 
-    [Header("Regla de empleados")]
+    [Header("ACTIVITY 1 - Regla de empleados")]
     [SerializeField] private string employeesGroupId = "EMPLOYEES";
     [SerializeField] private int requiredEmployees = 4;
 
-    [Header("Botón continuar")]
+    [Header("ACTIVITY 1 - Botón continuar")]
     [SerializeField] private Button continueButton1;
-    [SerializeField] private bool hideButtonInstead = false;
+    [SerializeField] private bool hideButton1Instead = false;
 
     // Guardamos SOLO los slots no-empleado por slotIndex (DG/DF/DP)
     private readonly HashSet<int> requiredUniqueSlotIndices = new HashSet<int>();
@@ -23,6 +26,40 @@ public class Module3ActivityManager : MonoBehaviour
 
     // Guardamos slots de empleados
     private readonly List<DropSlot> employeeSlots = new List<DropSlot>();
+
+
+    // =========================================================
+    // ACTIVITY 2 (Camino de valores)
+    // =========================================================
+    [Header("ACTIVITY 2 - Character UI")]
+    [SerializeField] private Image activity2CharacterImage;
+
+    [Tooltip("11 sprites: 0..4 malos, 5 mid, 6..10 buenos")]
+    [SerializeField] private Sprite[] activity2States; // size 11
+
+    [SerializeField] private int activity2MidIndex = 5;
+
+    [Header("ACTIVITY 2 - Slots (los 5 slots de valores)")]
+    [Tooltip("Arrastra los 5 DropSlotUI3 aquí. Deben tener slotIndex 0..4.")]
+    [SerializeField] private DropSlotUI3[] activity2Slots;
+
+    [Header("ACTIVITY 2 - Win")]
+    [SerializeField] private int activity2RequiredGoodToWin = 5;
+
+    [Header("ACTIVITY 2 - Botón continuar")]
+    [SerializeField] private Button continueButton2;
+    [SerializeField] private bool hideButton2Instead = false;
+
+    private int a2CurrentIndex;
+    private bool a2Complete = false;
+
+    // slotIndex -> valueId
+    private readonly Dictionary<int, string> a2PlacedIdBySlot = new Dictionary<int, string>();
+    // valueId (bueno) colocados
+    private readonly HashSet<string> a2GoodPlacedIds = new HashSet<string>();
+    // valueId -> isGood (para revertir al quitar)
+    private readonly Dictionary<string, bool> a2IsGoodById = new Dictionary<string, bool>();
+
 
     private void Awake()
     {
@@ -36,6 +73,9 @@ public class Module3ActivityManager : MonoBehaviour
 
     private void Start()
     {
+        // ======================
+        // INIT ACTIVITY 1
+        // ======================
         requiredUniqueSlotIndices.Clear();
         placedUniqueBySlotIndex.Clear();
         employeeSlots.Clear();
@@ -58,46 +98,56 @@ public class Module3ActivityManager : MonoBehaviour
             }
         }
 
-        // ✅ Botón desactivado por defecto al iniciar
-        SetContinueEnabled(false);
+        SetContinue1Enabled(false);
+        ForceRecheckActivity1();
 
-        Debug.Log($"[Module3ActivityManager] Unique required={requiredUniqueSlotIndices.Count} | employeeSlots={employeeSlots.Count}");
+        // ======================
+        // INIT ACTIVITY 2
+        // ======================
+        a2PlacedIdBySlot.Clear();
+        a2GoodPlacedIds.Clear();
+        a2IsGoodById.Clear();
+        a2Complete = false;
 
-        // ✅ Revisión inicial por si la escena carga con slots ya ocupados
-        // (si no aplica, igual no molesta)
-        ForceRecheck();
+        // conectar slots de activity2 a este manager
+        if (activity2Slots != null)
+        {
+            foreach (var s in activity2Slots)
+            {
+                if (s == null) continue;
+                s.manager = this; // ✅ DropSlotUI3 llamará a este manager
+            }
+        }
+
+        SetContinue2Enabled(false);
+        A2SetState(activity2MidIndex);
+        ForceRecheckActivity2();
     }
 
-    /// <summary>
-    /// Esto lo llama MinigameOrgManager en cada acierto.
-    /// </summary>
+    // =========================================================
+    // ACTIVITY 1 API
+    // =========================================================
     public void RegisterPlacement(int slotIndex, string itemValue)
     {
-        // Si este slotIndex es de un slot único, lo registramos
         if (requiredUniqueSlotIndices.Contains(slotIndex))
         {
             placedUniqueBySlotIndex[slotIndex] = itemValue ?? "";
         }
 
-        bool complete = IsActivityComplete();
-        SetContinueEnabled(complete);
+        bool complete = IsActivity1Complete();
+        SetContinue1Enabled(complete);
 
-        Debug.Log($"[Module3ActivityManager] Registro slotIndex={slotIndex} item={itemValue} | complete={complete} | {DumpStatus()}");
+        Debug.Log($"[Module3ActivityManager] A1 Registro slotIndex={slotIndex} item={itemValue} | complete={complete}");
     }
 
-    /// <summary>
-    /// ✅ Completado = (DG/DF/DP registrados) + (4 empleados ocupando slots del grupo)
-    /// </summary>
-    public bool IsActivityComplete()
+    public bool IsActivity1Complete()
     {
-        // 1) Todos los slots únicos llenos (según registro)
         foreach (var idx in requiredUniqueSlotIndices)
         {
             if (!placedUniqueBySlotIndex.ContainsKey(idx)) return false;
             if (string.IsNullOrEmpty(placedUniqueBySlotIndex[idx])) return false;
         }
 
-        // 2) Empleados: cantidad ocupada en el grupo (estado real)
         int occupiedEmployees = 0;
         for (int i = 0; i < employeeSlots.Count; i++)
         {
@@ -108,10 +158,7 @@ public class Module3ActivityManager : MonoBehaviour
         return occupiedEmployees >= requiredEmployees;
     }
 
-    /// <summary>
-    /// ✅ Activa / desactiva el botón según el estado.
-    /// </summary>
-    private void SetContinueEnabled(bool value)
+    private void SetContinue1Enabled(bool value)
     {
         if (continueButton1 == null)
         {
@@ -119,7 +166,7 @@ public class Module3ActivityManager : MonoBehaviour
             return;
         }
 
-        if (hideButtonInstead)
+        if (hideButton1Instead)
         {
             continueButton1.gameObject.SetActive(value);
         }
@@ -131,37 +178,14 @@ public class Module3ActivityManager : MonoBehaviour
             var img = continueButton1.GetComponent<Image>();
             if (img != null) img.color = value ? Color.white : new Color(1f, 1f, 1f, 0.5f);
         }
-
-        Debug.Log("[Module3ActivityManager] Botón interactable = " +
-                  (continueButton1 != null ? continueButton1.interactable.ToString() : "null"));
     }
 
-    /// <summary>
-    /// ✅ Útil si quieres forzar re-cálculo (por ejemplo al cargar escena o si cambias algo sin registrar).
-    /// </summary>
-    public void ForceRecheck()
+    public void ForceRecheckActivity1()
     {
-        bool complete = IsActivityComplete();
-        SetContinueEnabled(complete);
+        bool complete = IsActivity1Complete();
+        SetContinue1Enabled(complete);
     }
 
-    private string DumpStatus()
-    {
-        var parts = new List<string>();
-        foreach (var idx in requiredUniqueSlotIndices)
-        {
-            placedUniqueBySlotIndex.TryGetValue(idx, out var val);
-            parts.Add($"{idx}:{val}");
-        }
-
-        int occupiedEmployees = 0;
-        for (int i = 0; i < employeeSlots.Count; i++)
-            if (employeeSlots[i] != null && employeeSlots[i].IsOccupied) occupiedEmployees++;
-
-        return $"Unique[{string.Join(" | ", parts)}] EmployeesOccupied={occupiedEmployees}/{requiredEmployees}";
-    }
-
-    // ✅ Para el submitter
     public Dictionary<int, string> GetActivity1PlacementsCopy()
     {
         var result = new Dictionary<int, string>();
@@ -176,5 +200,140 @@ public class Module3ActivityManager : MonoBehaviour
         }
 
         return result;
+    }
+
+    // =========================================================
+    // ACTIVITY 2 API (lo llama DropSlotUI3)
+    // =========================================================
+    public void RegisterActivity2Placement(int slotIndex, string valueId, bool isGood)
+    {
+        if (a2Complete) return;
+        if (string.IsNullOrEmpty(valueId)) return;
+
+        // si el slot ya tenía algo, removerlo antes (revert)
+        if (a2PlacedIdBySlot.TryGetValue(slotIndex, out var oldId) && !string.IsNullOrEmpty(oldId))
+        {
+            bool oldIsGood = a2IsGoodById.TryGetValue(oldId, out var og) && og;
+            RegisterActivity2Removal(slotIndex, oldId, oldIsGood);
+        }
+
+        a2PlacedIdBySlot[slotIndex] = valueId;
+        a2IsGoodById[valueId] = isGood;
+
+        if (isGood)
+        {
+            a2GoodPlacedIds.Add(valueId);
+            A2Step(+1);
+        }
+        else
+        {
+            A2Step(-1);
+        }
+
+        a2Complete = IsActivity2Complete();
+        SetContinue2Enabled(a2Complete);
+
+        Debug.Log($"[Module3ActivityManager] A2 Place slot={slotIndex} id={valueId} good={isGood} goodCount={a2GoodPlacedIds.Count} state={a2CurrentIndex} complete={a2Complete}");
+    }
+
+    public void RegisterActivity2Removal(int slotIndex, string valueId, bool isGood)
+    {
+        if (string.IsNullOrEmpty(valueId)) return;
+
+        // limpiar slot
+        if (a2PlacedIdBySlot.ContainsKey(slotIndex))
+            a2PlacedIdBySlot[slotIndex] = "";
+
+        // revertir efecto
+        if (isGood)
+        {
+            a2GoodPlacedIds.Remove(valueId);
+            A2Step(-1);
+        }
+        else
+        {
+            A2Step(+1);
+        }
+
+        a2Complete = IsActivity2Complete();
+        SetContinue2Enabled(a2Complete);
+
+        Debug.Log($"[Module3ActivityManager] A2 Remove slot={slotIndex} id={valueId} good={isGood} goodCount={a2GoodPlacedIds.Count} state={a2CurrentIndex} complete={a2Complete}");
+    }
+
+    public bool IsActivity2Complete()
+    {
+        return a2GoodPlacedIds.Count >= activity2RequiredGoodToWin;
+    }
+
+    public void ForceRecheckActivity2()
+    {
+        bool complete = IsActivity2Complete();
+        SetContinue2Enabled(complete);
+    }
+
+    private void SetContinue2Enabled(bool value)
+    {
+        if (continueButton2 == null)
+        {
+            Debug.LogWarning("[Module3ActivityManager] continueButton2 no asignado.");
+            return;
+        }
+
+        if (hideButton2Instead)
+        {
+            continueButton2.gameObject.SetActive(value);
+        }
+        else
+        {
+            continueButton2.gameObject.SetActive(true);
+            continueButton2.interactable = value;
+
+            var img = continueButton2.GetComponent<Image>();
+            if (img != null) img.color = value ? Color.white : new Color(1f, 1f, 1f, 0.5f);
+        }
+    }
+
+    // ===== Activity2 sprites =====
+    private void A2SetState(int idx)
+    {
+        if (activity2CharacterImage == null) return;
+        if (activity2States == null || activity2States.Length == 0) return;
+
+        a2CurrentIndex = Mathf.Clamp(idx, 0, activity2States.Length - 1);
+        var sp = activity2States[a2CurrentIndex];
+        if (sp == null) return;
+
+        activity2CharacterImage.sprite = sp;
+        activity2CharacterImage.enabled = true;
+        activity2CharacterImage.preserveAspect = true;
+    }
+
+    private void A2Step(int delta) => A2SetState(a2CurrentIndex + delta);
+
+    // ===== Para Submitter =====
+    public Dictionary<int, string> GetActivity2PlacementsCopy()
+    {
+        var result = new Dictionary<int, string>();
+
+        if (activity2Slots == null) return result;
+
+        foreach (var s in activity2Slots)
+        {
+            if (s == null) continue;
+            int idx = s.slotIndex;
+
+            a2PlacedIdBySlot.TryGetValue(idx, out var val);
+            result[idx] = val ?? "";
+        }
+
+        return result;
+    }
+
+    // ✅ COMPATIBILIDAD: MinigameOrgManager llama ForceRecheck()
+    public void ForceRecheck()
+    {
+        ForceRecheckActivity1();
+        ForceRecheckActivity2();
     }
 }
