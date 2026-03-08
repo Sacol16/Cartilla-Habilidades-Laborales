@@ -1,4 +1,4 @@
-// ===========================
+ // ===========================
 // DraggableUI.cs
 // - Draggable UI con ID (name/id) para validación del slot
 // - SnapBack a su posición original si cae mal
