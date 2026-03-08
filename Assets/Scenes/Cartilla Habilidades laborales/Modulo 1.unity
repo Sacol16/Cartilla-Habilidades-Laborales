@@ -6429,7 +6429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &163762130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15625,8 +15625,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1013099163}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.14387755, y: 0}
+  m_AnchorMax: {x: 0.14387755, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25273,7 +25273,7 @@ RectTransform:
   m_Father: {fileID: 881437704}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25348,7 +25348,7 @@ RectTransform:
   m_Father: {fileID: 735034451}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -25850,7 +25850,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1350384099
 Transform:
   m_ObjectHideFlags: 0
@@ -32611,7 +32611,7 @@ RectTransform:
   m_Father: {fileID: 226486005}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0.14387755, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -34290,6 +34290,7 @@ MonoBehaviour:
   selectedColor: {r: 0, g: 0.6132076, b: 0, a: 1}
   unselectedColor: {r: 1, g: 1, b: 1, a: 1}
   enableWhenSelected: {fileID: 1498226672}
+  activityManager: {fileID: 610045852}
   selectedIndex: -1
 --- !u!114 &1677693311
 MonoBehaviour:
@@ -34309,6 +34310,8 @@ MonoBehaviour:
   durationText: {fileID: 251321658}
   recordButtonLabel: {fileID: 226518517}
   maxSeconds: 60
+  activityManager: {fileID: 610045852}
+  debugLogs: 0
   playbackSource: {fileID: 219307409}
   sampleRate: 44100
 --- !u!1 &1697699743
@@ -34821,11 +34824,13 @@ MonoBehaviour:
   canva1: {fileID: 1350384096}
   canva2: {fileID: 1174876645}
   drawingSaver: {fileID: 610045854}
+  activityManager: {fileID: 610045852}
   saveButton: {fileID: 1781122323}
   buttonLabelTMP: {fileID: 1969466287}
   buttonLabelLegacy: {fileID: 0}
   savingText: Guardando...
   waitSeconds: 5
+  debugLogs: 0
 --- !u!1 &1796078981
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,10 @@ public class BotonGuardarDibujo : MonoBehaviour
     [Header("Refs")]
     [SerializeField] private DrawingSaver drawingSaver; // arrastra aquí el objeto que tiene DrawingSaver
 
+    [Header("Activity Manager (Assign in Inspector)")]
+    [Tooltip("Arrastra aquí Module1ActivityManager o Module2ActivityManager (según el módulo donde estés).")]
+    [SerializeField] private MonoBehaviour activityManager;
+
     [Header("UI")]
     [SerializeField] private Button saveButton;         // el botón que se clickea
     [SerializeField] private TMP_Text buttonLabelTMP;   // texto del botón (TMP)
@@ -18,12 +22,15 @@ public class BotonGuardarDibujo : MonoBehaviour
     [SerializeField] private string savingText = "Guardando...";
     [SerializeField] private float waitSeconds = 5f;
 
+    [Header("Debug")]
+    [SerializeField] private bool debugLogs = false;
+
     private bool _busy = false;
     private string _originalText = "";
 
     public void SaveSwitch()
     {
-        if (_busy) return; // evita doble click
+        if (_busy) return;
         StartCoroutine(SaveAndSwitchRoutine());
     }
 
@@ -31,14 +38,12 @@ public class BotonGuardarDibujo : MonoBehaviour
     {
         _busy = true;
 
-        // Deshabilitar botón (evita clicks)
         if (saveButton != null) saveButton.interactable = false;
 
-        // Guardar texto original y cambiar a "Guardando..."
         CacheOriginalTextIfNeeded();
         SetButtonText(savingText);
 
-        // Validaciones
+        // Validar DrawingSaver
         if (drawingSaver == null)
         {
             Debug.LogError("[BotonGuardarDibujo] Falta asignar DrawingSaver.");
@@ -46,6 +51,7 @@ public class BotonGuardarDibujo : MonoBehaviour
             yield break;
         }
 
+        // Capturar PNG
         byte[] png = drawingSaver.CapturePngBytes();
         if (png == null || png.Length == 0)
         {
@@ -54,25 +60,56 @@ public class BotonGuardarDibujo : MonoBehaviour
             yield break;
         }
 
-        // Guardar para subirlo al final (un solo POST)
-        if (Module1ActivityManager.Instance != null)
-            Module1ActivityManager.Instance.SetActivity3Drawing(png);
+        // Guardar en el manager asignado
+        if (!PushPngToManager(png))
+        {
+            Debug.LogError("[BotonGuardarDibujo] No se pudo guardar el PNG: ActivityManager no asignado o tipo no soportado.");
+            RestoreUI();
+            yield break;
+        }
 
-        // Espera 5 segundos antes de cambiar de canvas
+        if (debugLogs) Debug.Log($"[BotonGuardarDibujo] PNG guardado. bytes={png.Length}");
+
+        // Espera antes de cambiar de canvas
         yield return new WaitForSeconds(waitSeconds);
 
-        // UI flow
         if (canva2 != null) canva2.SetActive(true);
         if (canva1 != null) canva1.SetActive(false);
 
-        // (Opcional) Si quieres dejar el botón en "Guardando..." ya no restauras.
-        // Si quieres restaurarlo por si vuelves a esta pantalla, descomenta:
+        // Si quieres permitir volver y reusar el botón, descomenta:
         // RestoreUI();
+    }
+
+    private bool PushPngToManager(byte[] png)
+    {
+        if (activityManager == null)
+        {
+            Debug.LogError("[BotonGuardarDibujo] ActivityManager no asignado en el Inspector.");
+            return false;
+        }
+
+        // Module2
+        if (activityManager is Module2ActivityManager m2)
+        {
+            m2.SetActivity3Drawing(png);
+            return true;
+        }
+
+        // Module1
+        if (activityManager is Module1ActivityManager m1)
+        {
+            m1.SetActivity3Drawing(png);
+            return true;
+        }
+
+        // Si quieres soportar más módulos luego, agregas aquí
+        Debug.LogError("[BotonGuardarDibujo] ActivityManager asignado no es Module1ActivityManager ni Module2ActivityManager.");
+        return false;
     }
 
     private void CacheOriginalTextIfNeeded()
     {
-        if (_originalText != "") return;
+        if (!string.IsNullOrEmpty(_originalText)) return;
 
         if (buttonLabelTMP != null) _originalText = buttonLabelTMP.text;
         else if (buttonLabelLegacy != null) _originalText = buttonLabelLegacy.text;

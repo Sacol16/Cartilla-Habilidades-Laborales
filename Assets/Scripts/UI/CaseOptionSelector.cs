@@ -4,10 +4,8 @@ using UnityEngine.UI;
 public class CaseOptionSelector : MonoBehaviour
 {
     [Header("Options")]
-    [Tooltip("Arrastra aquí los botones de respuesta (en el orden que quieras).")]
     [SerializeField] private Button[] optionButtons;
 
-    [Tooltip("Texto/ID de cada opción. Debe tener el MISMO tamaño y orden que optionButtons.")]
     [SerializeField] private string[] answers;
 
     [Header("Colors")]
@@ -15,15 +13,27 @@ public class CaseOptionSelector : MonoBehaviour
     [SerializeField] private Color unselectedColor = Color.red;
 
     [Header("UI to enable")]
-    [Tooltip("Se activa cuando hay una opción seleccionada (por ejemplo un botón de continuar).")]
     [SerializeField] private GameObject enableWhenSelected;
+
+    [Header("Activity Manager (Assign in Inspector)")]
+    [Tooltip("Arrastra aquí Module1ActivityManager o Module2ActivityManager")]
+    [SerializeField] private MonoBehaviour activityManager;
+
+    private IActivity4Receiver mgr;
 
     [Header("State (read-only)")]
     [SerializeField] private int selectedIndex = -1;
 
     private void Awake()
     {
-        // Validación rápida
+        // Resolver manager
+        mgr = activityManager as IActivity4Receiver;
+        if (mgr == null && activityManager != null)
+            mgr = activityManager.GetComponent<IActivity4Receiver>();
+
+        if (mgr == null)
+            Debug.LogError("[CaseOptionSelector] ActivityManager no asignado o no implementa IActivity4Receiver.");
+
         if (optionButtons == null || optionButtons.Length == 0)
         {
             Debug.LogWarning("[CaseOptionSelector] No hay optionButtons asignados.");
@@ -35,10 +45,9 @@ public class CaseOptionSelector : MonoBehaviour
             Debug.LogWarning("[CaseOptionSelector] 'answers' debe tener el mismo tamaño que 'optionButtons'.");
         }
 
-        // Vincular listeners
         for (int i = 0; i < optionButtons.Length; i++)
         {
-            int index = i; // captura segura
+            int index = i;
             if (optionButtons[i] != null)
                 optionButtons[i].onClick.AddListener(() => SelectOption(index));
         }
@@ -46,51 +55,32 @@ public class CaseOptionSelector : MonoBehaviour
         RefreshVisuals();
     }
 
-    /// <summary>
-    /// Selecciona una opción (solo puede haber 1 activa).
-    /// Si seleccionas otra, deselecciona la anterior.
-    /// </summary>
     public void SelectOption(int index)
     {
-        if (optionButtons == null || optionButtons.Length == 0) return;
         if (index < 0 || index >= optionButtons.Length) return;
 
-        // Si ya estaba seleccionada esa misma, no hacemos nada (sigue seleccionada)
         if (selectedIndex == index) return;
 
         selectedIndex = index;
         RefreshVisuals();
 
-        // ? Guardar selección en el manager (Actividad 4)
-        if (Module1ActivityManager.Instance != null)
-        {
-            // Usa el "answer" como ID/texto guardado
-            Module1ActivityManager.Instance.SetActivity4SelectedOption(GetSelectedAnswer());
-        }
+        if (mgr != null)
+            mgr.SetActivity4SelectedOption(GetSelectedAnswer());
     }
 
-    /// <summary>
-    /// Limpia la selección (opcional).
-    /// </summary>
     public void ClearSelection()
     {
         selectedIndex = -1;
         RefreshVisuals();
 
-        // ? Limpiar selección en el manager (Actividad 4)
-        if (Module1ActivityManager.Instance != null)
-        {
-            Module1ActivityManager.Instance.ClearActivity4Selection();
-        }
+        if (mgr != null)
+            mgr.ClearActivity4Selection();
     }
 
     public int GetSelectedIndex() => selectedIndex;
 
     public bool HasSelection() => selectedIndex >= 0;
 
-    /// <summary>
-    /// Devuelve el texto/ID de la opción seleccionada. Retorna "" si no hay selección o si answers no está bien configurado.
-    /// </summary>
     public string GetSelectedAnswer()
     {
         if (selectedIndex < 0) return "";
@@ -101,8 +91,6 @@ public class CaseOptionSelector : MonoBehaviour
 
     private void RefreshVisuals()
     {
-        if (optionButtons == null) return;
-
         for (int i = 0; i < optionButtons.Length; i++)
         {
             var btn = optionButtons[i];
@@ -114,7 +102,6 @@ public class CaseOptionSelector : MonoBehaviour
             img.color = (i == selectedIndex) ? selectedColor : unselectedColor;
         }
 
-        // ? Activar/desactivar el GameObject según si hay selección
         if (enableWhenSelected != null)
             enableWhenSelected.SetActive(HasSelection());
     }

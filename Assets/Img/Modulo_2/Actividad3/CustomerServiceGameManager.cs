@@ -2,10 +2,15 @@
 // CustomerServiceGameManager.cs
 // - UI de pedido con 3 slots (iconos)
 // - Se rellenan/chequean cuando aciertas
+// - Cambia el sprite del cliente según el customer
+// - Feedback aleatorio + se oculta solo a los X segundos
+// - Al terminar: activa un GameObject (endPanel / siguiente paso) en vez de mostrar texto final
 // ===========================
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class CustomerServiceGameManager : MonoBehaviour
@@ -13,21 +18,65 @@ public class CustomerServiceGameManager : MonoBehaviour
     [Header("Customer Logic")]
     [SerializeField] private CustomerOrder customerOrder;
 
+    [Header("Customer UI")]
+    [SerializeField] private TMP_Text customerNameText;
+    [SerializeField] private Image customerImage;
+
     [Header("Order Slots UI (3)")]
     [SerializeField] private OrderSlotUI[] orderSlots = new OrderSlotUI[3];
 
-    [Header("UI Text")]
-    [SerializeField] private TMP_Text customerNameText;
+    [Header("Feedback UI")]
     [SerializeField] private TMP_Text feedbackText;
+    [SerializeField] private float feedbackSeconds = 1.2f;
+
+    [Header("End (Activate GameObject)")]
+    [Tooltip("Se activa cuando termina el último cliente (panel final, botón continuar, etc).")]
+    [SerializeField] private GameObject onMinigameFinishedActivate;
+
+    [Tooltip("Opcional: desactiva este GO al terminar (ej: UI del minijuego).")]
+    [SerializeField] private GameObject onMinigameFinishedDeactivate;
 
     [Header("Audio")]
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioClip correctSfx;
     [SerializeField] private AudioClip wrongCustomerSfx;
 
-    [Header("Feedback Messages")]
-    [SerializeField] private string correctMsg = "¡Perfecto!";
-    [SerializeField] private string wrongMsg = "Ese no es el producto.";
+    [Header("Feedback Messages (Random)")]
+    [SerializeField]
+    private List<string> correctMessages = new List<string>
+    {
+        "¡Perfecto!",
+        "¡Muy bien!",
+        "¡Eso es!",
+        "¡Excelente elección!",
+        "¡Genial, justo ese!",
+        "¡Listo, aquí tienes!",
+        "¡Pedido en camino!",
+        "¡Buen servicio!"
+    };
+
+    [SerializeField]
+    private List<string> wrongMessages = new List<string>
+    {
+        "Ese no era",
+        "No coincide con el pedido.",
+        "Ups, eso no lo pidió.",
+        "Revisa el pedido otra vez.",
+        "Ese producto no va aquí.",
+        "Casi… pero no es.",
+        "El cliente no pidió eso.",
+        "Intenta con otro."
+    };
+
+    [SerializeField]
+    private List<string> orderCompletedMessages = new List<string>
+    {
+        "¡Pedido completo!",
+        "¡Todo listo, gracias!",
+        "¡Perfecto, ya quedó!",
+        "¡Excelente! Pedido finalizado.",
+        "¡Listo! Siguiente cliente…"
+    };
 
     [Header("Product Catalog (id -> icon)")]
     [SerializeField] private List<ProductIcon> productIcons = new List<ProductIcon>();
@@ -46,11 +95,19 @@ public class CustomerServiceGameManager : MonoBehaviour
     public class CustomerOrderData
     {
         public string customerName;
+        public Sprite customerSprite;
         public List<string> products; // máximo 3
     }
 
     private Dictionary<string, Sprite> iconMap;
     private int currentCustomerIndex = 0;
+
+    private Coroutine feedbackRoutine;
+    private int lastCorrectIndex = -1;
+    private int lastWrongIndex = -1;
+    private int lastCompleteIndex = -1;
+
+    private bool minigameFinished = false;
 
     private void Awake()
     {
@@ -63,6 +120,12 @@ public class CustomerServiceGameManager : MonoBehaviour
                     iconMap.Add(p.productId, p.icon);
             }
         }
+
+        if (feedbackText != null)
+            feedbackText.text = "";
+
+        if (onMinigameFinishedActivate != null)
+            onMinigameFinishedActivate.SetActive(false);
     }
 
     private void Start()
@@ -76,7 +139,6 @@ public class CustomerServiceGameManager : MonoBehaviour
         if (customers == null || customers.Count == 0) return;
 
         currentCustomerIndex = Mathf.Clamp(index, 0, customers.Count - 1);
-
         var data = customers[currentCustomerIndex];
 
         // Seguridad: limitar a 3
@@ -86,15 +148,18 @@ public class CustomerServiceGameManager : MonoBehaviour
 
         customerOrder.SetOrder(order);
 
-        // UI nombre
         if (customerNameText != null)
             customerNameText.text = data.customerName;
 
-        // Reset slots
+        if (customerImage != null)
+        {
+            customerImage.sprite = data.customerSprite;
+            customerImage.enabled = (data.customerSprite != null);
+        }
+
         for (int i = 0; i < orderSlots.Length; i++)
             if (orderSlots[i] != null) orderSlots[i].ResetSlot();
 
-        // Set slots con iconos
         for (int i = 0; i < order.Count && i < orderSlots.Length; i++)
         {
             var slot = orderSlots[i];
@@ -104,7 +169,7 @@ public class CustomerServiceGameManager : MonoBehaviour
             slot.SetProduct(order[i], icon);
         }
 
-        SetFeedback("");
+        ShowFeedback("", 0f);
     }
 
     private Sprite GetIcon(string productId)
@@ -118,6 +183,7 @@ public class CustomerServiceGameManager : MonoBehaviour
 
     public bool TryDeliverProduct(string productId)
     {
+        if (minigameFinished) return false;
         if (customerOrder == null) return false;
 
         bool completed;
@@ -125,16 +191,14 @@ public class CustomerServiceGameManager : MonoBehaviour
 
         if (ok)
         {
-            // marcar slot correspondiente
             MarkSlotDelivered(productId);
 
-            SetFeedback(correctMsg);
+            ShowFeedback(GetRandomNonRepeat(correctMessages, ref lastCorrectIndex), feedbackSeconds);
             Play(correctSfx);
 
-            // ¿pedido completo?
             if (AreAllSlotsDelivered())
             {
-                SetFeedback("¡Pedido completo!");
+                ShowFeedback(GetRandomNonRepeat(orderCompletedMessages, ref lastCompleteIndex), feedbackSeconds);
                 Invoke(nameof(NextCustomer), 0.7f);
             }
 
@@ -142,7 +206,7 @@ public class CustomerServiceGameManager : MonoBehaviour
         }
         else
         {
-            SetFeedback(wrongMsg);
+            ShowFeedback(GetRandomNonRepeat(wrongMessages, ref lastWrongIndex), feedbackSeconds);
             Play(wrongCustomerSfx);
             return false;
         }
@@ -165,7 +229,6 @@ public class CustomerServiceGameManager : MonoBehaviour
 
     private bool AreAllSlotsDelivered()
     {
-        // Solo cuentan slots que tengan ProductId asignado
         for (int i = 0; i < orderSlots.Length; i++)
         {
             var slot = orderSlots[i];
@@ -180,18 +243,73 @@ public class CustomerServiceGameManager : MonoBehaviour
     private void NextCustomer()
     {
         int next = currentCustomerIndex + 1;
+
         if (next >= customers.Count)
         {
-            SetFeedback("¡Terminaste el minijuego! ??");
+            FinishMinigame(); // <-- CAMBIO CLAVE
             return;
         }
 
         LoadCustomer(next);
     }
 
-    private void SetFeedback(string msg)
+    private void FinishMinigame()
     {
-        if (feedbackText != null) feedbackText.text = msg;
+        if (minigameFinished) return;
+        minigameFinished = true;
+
+        // limpiar feedback en pantalla
+        ShowFeedback("", 0f);
+
+        // activar/desactivar lo que necesites
+        if (onMinigameFinishedActivate != null)
+            onMinigameFinishedActivate.SetActive(true);
+
+        if (onMinigameFinishedDeactivate != null)
+            onMinigameFinishedDeactivate.SetActive(false);
+    }
+
+    // ===== Feedback que se auto-oculta =====
+    private void ShowFeedback(string msg, float seconds)
+    {
+        if (feedbackText == null) return;
+
+        if (feedbackRoutine != null)
+            StopCoroutine(feedbackRoutine);
+
+        feedbackRoutine = StartCoroutine(FeedbackCoroutine(msg, seconds));
+    }
+
+    private IEnumerator FeedbackCoroutine(string msg, float seconds)
+    {
+        feedbackText.text = msg;
+
+        if (seconds > 0f)
+        {
+            yield return new WaitForSeconds(seconds);
+
+            if (feedbackText.text == msg)
+                feedbackText.text = "";
+        }
+    }
+
+    // ===== Random sin repetir el último =====
+    private string GetRandomNonRepeat(List<string> list, ref int lastIndex)
+    {
+        if (list == null || list.Count == 0) return "";
+
+        if (list.Count == 1)
+        {
+            lastIndex = 0;
+            return list[0];
+        }
+
+        int idx;
+        do { idx = Random.Range(0, list.Count); }
+        while (idx == lastIndex);
+
+        lastIndex = idx;
+        return list[idx];
     }
 
     private void Play(AudioClip clip)

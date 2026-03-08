@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class Module1ActivityManager : MonoBehaviour
+public class Module1ActivityManager : MonoBehaviour, IActivity4Receiver
 {
     public static Module1ActivityManager Instance { get; private set; }
 

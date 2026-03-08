@@ -16,6 +16,15 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
     [Header("Settings")]
     [SerializeField] private int maxSeconds = 60;
 
+    [Header("Activity 4 -> Manager (assign in Inspector)")]
+    [Tooltip("Arrastra aquí el GameObject que tenga Module1ActivityManager o Module2ActivityManager.")]
+    [SerializeField] private MonoBehaviour activityManager; // debe implementar IActivity4Receiver
+
+    [Header("Debug")]
+    [SerializeField] private bool debugLogs = false;
+
+    private IActivity4Receiver mgr;
+
     private bool isScrubbing;
     private bool lastHasAudio = false;
 
@@ -34,7 +43,7 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
     [System.Runtime.InteropServices.DllImport("__Internal")] private static extern void WA_Seek(float t);  // seconds
     [System.Runtime.InteropServices.DllImport("__Internal")] private static extern string WA_GetAudioBase64(); // webm base64 (sin data:)
 #else
-    // ===== Editor/Standalone: Microphone (para probar local) =====
+    // ===== Editor/Standalone: Microphone =====
     [Header("Editor/Standalone test (ignored in WebGL)")]
     [SerializeField] private AudioSource playbackSource;
     [SerializeField] private int sampleRate = 44100;
@@ -48,6 +57,20 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
 
     private void Awake()
     {
+        // Resolver manager desde inspector
+        mgr = activityManager as IActivity4Receiver;
+        if (mgr == null && activityManager != null)
+            mgr = activityManager.GetComponent<IActivity4Receiver>();
+
+        if (mgr == null)
+        {
+            Debug.LogError("[WebAudioRecorderUI] No hay ActivityManager asignado o no implementa IActivity4Receiver. Asigna Module1/Module2 manager en el inspector.");
+        }
+        else if (debugLogs)
+        {
+            Debug.Log("[WebAudioRecorderUI] Manager OK: " + activityManager.GetType().Name);
+        }
+
         if (recordOrPlayButton != null) recordOrPlayButton.onClick.AddListener(OnRecordOrPlayPressed);
         if (deleteButton != null) deleteButton.onClick.AddListener(DeleteAudio);
 
@@ -76,10 +99,8 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         bool has = WA_HasAudio() == 1;
         bool rec = WA_IsRecording() == 1;
 
-        // Sincroniza audio real al manager (y por tanto el gating del botón 4)
         PushAudioStateToManager(has);
 
-        // UI tiempo durante grabación / reproducción
         float dur = rec ? maxSeconds : (has ? WA_GetDuration() : 0f);
         float t   = rec ? WA_GetTime() : (has ? WA_GetTime() : 0f);
 
@@ -95,7 +116,6 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
 #else
         bool has = recordedClip != null;
 
-        // Sincroniza al manager
         PushAudioStateToManager(has);
 
         float dur;
@@ -127,32 +147,30 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
 #endif
     }
 
-    // ---------- Activity 4 integration (store real audio in manager) ----------
+    // ---------- Activity 4 integration ----------
     private void PushAudioStateToManager(bool hasAudioNow)
     {
-        var mgr = Module1ActivityManager.Instance;
         if (mgr == null) return;
 
-        // 1) Siempre actualiza el flag de "hay audio" (esto activa el botón 4 aunque base64 tarde)
-        mgr.SetActivity4HasAudio(hasAudioNow);
+        // ===== LATCH WEBGL =====
+        // Si alguna vez llegó audio, NO lo vuelvas false por delays.
+        if (hasAudioNow)
+            lastHasAudio = true;
 
-        // 2) Si NO hay audio, limpia todo y listo
-        if (!hasAudioNow)
+        // Si el usuario borró audio, ahí sí permitimos volver a false (DeleteAudio llama ClearActivity4Audio)
+        bool effectiveHas = lastHasAudio;
+
+        mgr.SetActivity4HasAudio(effectiveHas);
+
+        // Si no hay audio "efectivo", limpiamos (solo cuando realmente se perdió)
+        if (!effectiveHas)
         {
-            if (lastHasAudio)
-            {
-                lastHasAudio = false;
-                mgr.ClearActivity4Audio(); // deja flag false + limpia base64/bytes
-            }
+            mgr.ClearActivity4Audio();
             return;
         }
 
-        // hasAudioNow == true
-        if (!lastHasAudio) lastHasAudio = true;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
-    // 3) Intenta guardar el base64 real (si aún no está).
-    // Si por timing viene vacío, Update lo volverá a intentar en el siguiente frame.
+    // Si ya hay audio efectivo, intentamos guardar base64 si aún no está
     if (string.IsNullOrEmpty(mgr.Activity4AudioBase64))
     {
         string b64 = GetRecordedAudioBase64();
@@ -171,21 +189,17 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
 
         if (!has && !rec)
         {
-            // Iniciar grabación
             WA_StartRecord();
-            // mientras graba, aún no hay audio final
-            if (Module1ActivityManager.Instance != null)
-                Module1ActivityManager.Instance.ClearActivity4Audio();
+            // durante grabación, aún no hay audio final: limpiar
+            if (mgr != null) mgr.ClearActivity4Audio();
         }
         else if (rec)
         {
-            // Detener grabación
             WA_StopRecord();
-            // Update() se encargará de detectar WA_HasAudio() y guardar base64 cuando esté listo.
+            // Update() detectará WA_HasAudio() y guardará base64 cuando esté listo.
         }
         else
         {
-            // Play/Pause
             WA_PlayPause();
         }
 #else
@@ -195,7 +209,7 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         }
         else if (isRecording)
         {
-            StopRecordingStandalone(); // recorta y deja recordedClip != null (si grabó)
+            StopRecordingStandalone();
         }
         else
         {
@@ -208,7 +222,7 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
     public void DeleteAudio()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        WA_Clear();
+    WA_Clear();
 #else
         if (playbackSource != null) playbackSource.Stop();
         recordedClip = null;
@@ -216,22 +230,18 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         isPlaying = false;
         playStartTime = 0f;
 #endif
+
         if (progressSlider != null) progressSlider.SetValueWithoutNotify(0f);
 
-        // Limpia audio en manager (Actividad 4)
-        if (Module1ActivityManager.Instance != null)
-            Module1ActivityManager.Instance.ClearActivity4Audio();
+        if (mgr != null) mgr.ClearActivity4Audio();
 
-        lastHasAudio = false;
+        lastHasAudio = false; // <- importante para el latch
 
         RefreshUI();
     }
 
     // ---------- Slider scrubbing ----------
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        isScrubbing = true;
-    }
+    public void OnPointerDown(PointerEventData eventData) => isScrubbing = true;
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -315,20 +325,17 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         return $"{m:00}:{s:00}";
     }
 
-    // ---------- Get audio for final POST ----------
-    // En WebGL te devuelve base64 de webm (opus). En standalone no lo implemento aquí.
     public string GetRecordedAudioBase64()
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         return WA_HasAudio() == 1 ? WA_GetAudioBase64() : "";
 #else
-        Debug.LogWarning("GetRecordedAudioBase64: En standalone usarías WAV/bytes. En WebGL se usa JS.");
         return "";
 #endif
     }
 
 #if !(UNITY_WEBGL && !UNITY_EDITOR)
-    // ===== Standalone test (Microphone) =====
+    // ===== Standalone test =====
     private void StartRecordingStandalone()
     {
         if (string.IsNullOrEmpty(micDevice))
@@ -343,16 +350,13 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         isPlaying = false;
         playStartTime = 0f;
 
-        // al iniciar grabación, limpiamos audio en el manager
-        if (Module1ActivityManager.Instance != null)
-            Module1ActivityManager.Instance.ClearActivity4Audio();
+        if (mgr != null) mgr.ClearActivity4Audio();
     }
 
     private void StopRecordingStandalone()
     {
         if (string.IsNullOrEmpty(micDevice) || recordedClip == null) return;
 
-        // 1) Tomar cuántas muestras reales se grabaron
         int samplesRecorded = Microphone.GetPosition(micDevice);
         Microphone.End(micDevice);
         isRecording = false;
@@ -360,29 +364,17 @@ public class WebAudioRecorderUI : MonoBehaviour, IPointerDownHandler, IPointerUp
         if (samplesRecorded <= 0)
         {
             recordedClip = null;
-            if (Module1ActivityManager.Instance != null)
-                Module1ActivityManager.Instance.ClearActivity4Audio();
+            if (mgr != null) mgr.ClearActivity4Audio();
             return;
         }
 
-        // 2) Recortar: crear un nuevo clip solo con la duración grabada
         int channels = recordedClip.channels;
         float[] data = new float[samplesRecorded * channels];
         recordedClip.GetData(data, 0);
 
-        AudioClip trimmed = AudioClip.Create(
-            "RecordedTrimmed",
-            samplesRecorded,
-            channels,
-            recordedClip.frequency,
-            false
-        );
-
+        AudioClip trimmed = AudioClip.Create("RecordedTrimmed", samplesRecorded, channels, recordedClip.frequency, false);
         trimmed.SetData(data, 0);
         recordedClip = trimmed;
-
-        // Si algún día conviertes a WAV bytes, aquí sería el lugar:
-        // Module1ActivityManager.Instance.SetActivity4AudioBytes(wavBytes);
     }
 
     private void PlayPauseStandalone()

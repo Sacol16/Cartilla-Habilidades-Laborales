@@ -38,6 +38,7 @@ public class ModuleProgressDto
 public class ModuleDataDto
 {
     public Module1DataDto module1;
+    public Module2DataDto module2;
     public Module3DataDto module3; 
 }
 

@@ -54,6 +54,11 @@ public class NextCanvas : MonoBehaviour
         SceneManager.LoadScene("Modulo 2 Check");
     }
 
+    public void Modulo3()
+    {
+        SceneManager.LoadScene("Modulo 3");
+    }
+
     public void HideCanva()
     {
         canva1.SetActive(false);
