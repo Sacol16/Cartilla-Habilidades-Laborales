@@ -78,4 +78,9 @@ public class NextCanvas : MonoBehaviour
     {
         SceneManager.LoadScene("Estudiante");
     }
+
+    public void BacktoLobby2()
+    {
+        SceneManager.LoadScene("Facilitador");
+    }
 }
