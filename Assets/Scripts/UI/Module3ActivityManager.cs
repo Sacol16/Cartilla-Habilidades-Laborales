@@ -50,6 +50,11 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
     [SerializeField] private Button continueButton2;
     [SerializeField] private bool hideButton2Instead = false;
 
+    [Header("ACTIVITY 2 - Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip goodPlacementSound;
+    [SerializeField] private AudioClip badPlacementSound;
+
     private int a2CurrentIndex;
     private bool a2Complete = false;
 
@@ -223,6 +228,9 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
         if (a2Complete) return;
         if (string.IsNullOrEmpty(valueId)) return;
 
+        // 🔊 reproducir sonido
+        PlayPlacementSound(isGood);
+
         // si el slot ya tenía algo, removerlo antes (revert)
         if (a2PlacedIdBySlot.TryGetValue(slotIndex, out var oldId) && !string.IsNullOrEmpty(oldId))
         {
@@ -240,7 +248,7 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
         }
         else
         {
-            A2Step(-1);
+        A2Step(-1);
         }
 
         a2Complete = IsActivity2Complete();
@@ -439,5 +447,16 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
         }
 
         UpdateContinue4();
+    }
+
+    private void PlayPlacementSound(bool isGood)
+    {
+    if (audioSource == null) return;
+
+    if (isGood && goodPlacementSound != null)
+        audioSource.PlayOneShot(goodPlacementSound);
+
+    if (!isGood && badPlacementSound != null)
+        audioSource.PlayOneShot(badPlacementSound);
     }
 }

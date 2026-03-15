@@ -6,6 +6,11 @@ using UnityEngine.UI;
 
 public class MinigameOrgManager : MonoBehaviour
 {
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip correctSound;
+    [SerializeField] private AudioClip wrongSound;
+
     [Header("Feedback Text")]
     [SerializeField] private TMP_Text feedbackText;
     [SerializeField] private float messageSeconds = 1.5f;
@@ -132,12 +137,14 @@ public class MinigameOrgManager : MonoBehaviour
 
         slot.SetOccupied(true);
 
-        // opcional: pintar el frame del slot
         if (slot.slotFrame != null)
             slot.slotFrame.color = okSlotColor;
 
-        // opcional: animación pop
         StartCoroutine(Pop(slot.Rect));
+
+        // 🔊 SONIDO DE ACIERTO
+        if (audioSource != null && correctSound != null)
+            audioSource.PlayOneShot(correctSound);
 
         ShowMessage("¡Correcto!", true);
     }
@@ -146,6 +153,11 @@ public class MinigameOrgManager : MonoBehaviour
     {
         piece.ReturnToStart();
         StartCoroutine(Shake(piece.Rect));
+
+        // 🔊 SONIDO DE ERROR
+        if (audioSource != null && wrongSound != null)
+            audioSource.PlayOneShot(wrongSound);
+
         ShowMessage(msg, false);
     }
 
@@ -215,4 +227,5 @@ public class MinigameOrgManager : MonoBehaviour
 
         target.anchoredPosition = basePos;
     }
+
 }
