@@ -3202,6 +3202,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manager: {fileID: 998709704}
+  audioSource: {fileID: 998709706}
+  goodSound: {fileID: 8300000, guid: 80310fd881f40f74998dd23b104acdd6, type: 3}
+  badSound: {fileID: 8300000, guid: 966fca5746f6d83448391cbd6d6c597b, type: 3}
   cam: {fileID: 687537746}
   minX: -7.6
   maxX: 7.6

@@ -11,6 +11,11 @@ public class BasketCatcher2D : MonoBehaviour
     [Header("Game")]
     [SerializeField] private MiniGameManager1 manager;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip goodSound;
+    [SerializeField] private AudioClip badSound;
+
     [Header("Drag Move (X only)")]
     [Tooltip("Cámara que renderiza la escena 2D (si está vacío usa Camera.main)")]
     [SerializeField] private Camera cam;
@@ -23,12 +28,16 @@ public class BasketCatcher2D : MonoBehaviour
     [SerializeField] private float followSpeed = 0f;
 
     private bool isDragging;
-    private float dragOffsetX;      // mantiene el offset para que no “salte”
+    private float dragOffsetX;
     private float targetX;
 
     private void Awake()
     {
         if (cam == null) cam = Camera.main;
+
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
         targetX = transform.position.x;
     }
 
@@ -36,21 +45,16 @@ public class BasketCatcher2D : MonoBehaviour
     {
         if (!isDragging) return;
 
-        // Lee posición del puntero (mouse o touch)
         Vector3 screenPos = Input.mousePosition;
 
-        // Si quieres soportar touch explícito:
         if (Input.touchCount > 0)
             screenPos = Input.GetTouch(0).position;
 
-        // Convertir a mundo
         Vector3 world = cam.ScreenToWorldPoint(screenPos);
 
-        // X objetivo (solo X)
         targetX = world.x + dragOffsetX;
         targetX = Mathf.Clamp(targetX, minX, maxX);
 
-        // Aplicar movimiento
         Vector3 pos = transform.position;
 
         if (followSpeed <= 0f)
@@ -64,16 +68,13 @@ public class BasketCatcher2D : MonoBehaviour
 
         transform.position = pos;
 
-        // Soltar drag con mouse
         if (Input.GetMouseButtonUp(0))
             isDragging = false;
 
-        // Soltar drag con touch
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
             isDragging = false;
     }
 
-    // Necesitas Collider2D (no necesariamente trigger) para que esto detecte el click
     private void OnMouseDown()
     {
         StartDrag(Input.mousePosition);
@@ -89,8 +90,6 @@ public class BasketCatcher2D : MonoBehaviour
         if (cam == null) cam = Camera.main;
 
         Vector3 world = cam.ScreenToWorldPoint(screenPos);
-
-        // Offset para que al agarrarla no “salte” al centro del mouse
         dragOffsetX = transform.position.x - world.x;
 
         isDragging = true;
@@ -103,11 +102,19 @@ public class BasketCatcher2D : MonoBehaviour
         if (other.CompareTag("Good"))
         {
             manager.RegisterCorrect();
+
+            if (audioSource && goodSound)
+                audioSource.PlayOneShot(goodSound);
+
             Destroy(other.gameObject);
         }
         else if (other.CompareTag("Bad"))
         {
             manager.RegisterWrong();
+
+            if (audioSource && badSound)
+                audioSource.PlayOneShot(badSound);
+
             Destroy(other.gameObject);
         }
     }

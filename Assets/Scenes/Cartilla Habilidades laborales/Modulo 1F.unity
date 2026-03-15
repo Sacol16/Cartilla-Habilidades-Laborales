@@ -211,14 +211,14 @@ GameObject:
   - component: {fileID: 68019956}
   - component: {fileID: 68019955}
   - component: {fileID: 68019954}
-  - component: {fileID: 68019953}
+  - component: {fileID: 68019957}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &68019952
 RectTransform:
   m_ObjectHideFlags: 0
@@ -239,23 +239,6 @@ RectTransform:
   m_AnchoredPosition: {x: 266.42, y: -131.73}
   m_SizeDelta: {x: 100, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &68019953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 68019951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 889c95e17b2685a41b6b1a3de9fd00f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  apiConfig: {fileID: 11400000, guid: b1544e215f1386e45831decebbbba877, type: 2}
-  module1Score: 25
-  moduleId: 1
-  canva1: {fileID: 1380569918}
-  canva2: {fileID: 0}
 --- !u!114 &68019954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,9 +283,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 68019953}
-        m_TargetAssemblyTypeName: Module1ProgressSubmitter, Assembly-CSharp
-        m_MethodName: SubmitModule1
+      - m_Target: {fileID: 68019957}
+        m_TargetAssemblyTypeName: NextCanvas, Assembly-CSharp
+        m_MethodName: BacktoLobby2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -350,6 +333,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 68019951}
   m_CullTransparentMesh: 1
+--- !u!114 &68019957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68019951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3031b5670981924180bcdf9003453b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canva1: {fileID: 0}
+  canva2: {fileID: 0}
+  subtitulo: {fileID: 0}
+  subtituloBtn: {fileID: 0}
+  colorOn: {r: 0, g: 1, b: 0, a: 1}
+  colorOff: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &96235617
 GameObject:
   m_ObjectHideFlags: 0
@@ -18735,7 +18736,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &710596217
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25708,6 +25709,8 @@ MonoBehaviour:
   durationText: {fileID: 2090339582}
   recordButtonLabel: {fileID: 1716811064}
   maxSeconds: 60
+  activityManager: {fileID: 0}
+  debugLogs: 0
   playbackSource: {fileID: 1624568829}
   sampleRate: 44100
 --- !u!114 &1034628106
