@@ -98,6 +98,9 @@ public class Module3ProgressSubmitter : MonoBehaviour
             });
         }
 
+        // Activity4: selección + audio base64 (ya está como string)
+        string selected = mgr.Activity4SelectedOptionId ?? "";
+        string audioB64 = mgr.Activity4AudioBase64 ?? "";
         return new UpsertModuleProgressRequest
         {
             score = module3Score,
@@ -107,7 +110,9 @@ public class Module3ProgressSubmitter : MonoBehaviour
                 module3 = new Module3DataDto
                 {
                     activity1 = listA1.ToArray(),
-                    activity2 = listA2.ToArray() // ✅ NUEVO
+                    activity2 = listA2.ToArray(), // ✅ NUEVO
+                    activity4SelectedOptionId = selected,
+                    activity4AudioBase64 = audioB64
                 }
             }
         };
