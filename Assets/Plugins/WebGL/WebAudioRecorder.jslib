@@ -148,5 +148,32 @@ mergeInto(LibraryManager.library, {
 
     // first call may return empty; call again a moment later before submit
     return allocate(intArrayFromString(wa.__b64 || ""), 'i8', ALLOC_NORMAL);
+  },
+  WA_LoadBase64: function(base64Ptr) {
+    const b64 = UTF8ToString(base64Ptr);
+    const wa = window.__wa;
+    if (!wa || !b64) return;
+
+    // Convertir base64 → Blob
+    const byteCharacters = atob(b64);
+    const byteNumbers = new Array(byteCharacters.length);
+
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "audio/webm" });
+
+    wa.blob = blob;
+
+    if (wa.url) URL.revokeObjectURL(wa.url);
+    wa.url = URL.createObjectURL(blob);
+
+    wa.audio = new Audio(wa.url);
+    wa.audio.onended = () => { wa.playing = false; };
+
+    // 🔥 guardar base64 también
+    wa.__b64 = b64;
   }
 });

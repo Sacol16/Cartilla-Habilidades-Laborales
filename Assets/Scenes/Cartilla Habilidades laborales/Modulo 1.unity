@@ -14365,6 +14365,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 5249198957009629485, guid: 7c6e77c3ee596e744be8908227c17771, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &503158351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14534,6 +14537,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 573072214351280708, guid: 8712af7802a75ac47bdc9b57448ec6e7, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &508485398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22826,6 +22832,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 3628761898978099922, guid: e294d10bb19d0eb428228fec6227f95c, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &964223507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23455,6 +23464,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 8101759398495242786, guid: f29e6a5db9dea1f40b40a66c1f9c7274, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &1092859474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24174,6 +24186,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 183942834203245763, guid: fa00794e4a8a434458b46531284c8ba3, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &1153266694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26429,7 +26444,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -51.55, y: -67.3}
+  m_AnchoredPosition: {x: -51.55, y: -47}
   m_SizeDelta: {x: 31.299992, y: -90.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1431206881
@@ -34923,6 +34938,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 1286129246656771739, guid: d849392fe33097246ab8cfcdc6c931ea, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &1819550702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35017,6 +35035,9 @@ MonoBehaviour:
   destroyIfDroppedOutside: 1
   lockAfterSuccessfulDrop: 1
   disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 5104952849630200723, guid: e5bcff38180d4074c8eaf7da3be484d2, type: 3}
+  worldCamera: {fileID: 687537746}
+  worldZDepth: 5
 --- !u!114 &1839769856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40775,11 +40796,11 @@ Camera:
   far clip plane: 1000
   field of view: 72
   orthographic: 1
-  orthographic size: 4.7
+  orthographic size: 3.4
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 1

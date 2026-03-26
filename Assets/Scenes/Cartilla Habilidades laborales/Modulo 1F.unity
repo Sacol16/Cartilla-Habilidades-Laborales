@@ -25655,7 +25655,6 @@ GameObject:
   - component: {fileID: 1034628103}
   - component: {fileID: 1034628107}
   - component: {fileID: 1034628106}
-  - component: {fileID: 1034628104}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -25691,28 +25690,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1034628104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1034628102}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a61c176e5dc6de49b89bd230cca8a64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  recordOrPlayButton: {fileID: 821109008}
-  deleteButton: {fileID: 0}
-  progressSlider: {fileID: 963503067}
-  durationText: {fileID: 2090339582}
-  recordButtonLabel: {fileID: 1716811064}
-  maxSeconds: 60
-  activityManager: {fileID: 0}
-  debugLogs: 0
-  playbackSource: {fileID: 1624568829}
-  sampleRate: 44100
 --- !u!114 &1034628106
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -39,6 +39,26 @@ public class Module1Activity4Presenter : MonoBehaviour
     private bool _isScrubbing;
     private bool _uiReady;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern void WA_LoadBase64(string base64);
+
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern void WA_PlayPause();
+
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern int WA_IsPlaying();
+
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern float WA_GetDuration();
+
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern float WA_GetTime();
+
+[System.Runtime.InteropServices.DllImport("__Internal")]
+private static extern void WA_Seek(float t);
+#endif
+
     private void Awake()
     {
         _ids = new[] { option1Id, option2Id, option3Id, option4Id };
@@ -78,25 +98,37 @@ public class Module1Activity4Presenter : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+
+    float total = WA_GetDuration();
+    float current = WA_GetTime();
+
+    if (total <= 0.01f)
+    {
+        UpdateDurationText(0f, 0f);
+        if (progressSlider != null && !_isScrubbing) progressSlider.value = 0f;
+        return;
+    }
+
+    if (progressSlider != null && !_isScrubbing)
+        progressSlider.value = Mathf.Clamp01(current / total);
+
+    UpdateDurationText(current, total);
+
+#else
+        // TU LÓGICA ORIGINAL (no tocar)
         if (!_uiReady) return;
         if (audioSource == null) return;
         if (audioSource.clip == null) return;
 
-        // Actualiza slider + duración mientras se reproduce
         float total = audioSource.clip.length;
         float current = audioSource.time;
-
-        if (total <= 0.0001f)
-        {
-            UpdateDurationText(0f, 0f);
-            if (progressSlider != null && !_isScrubbing) progressSlider.value = 0f;
-            return;
-        }
 
         if (progressSlider != null && !_isScrubbing)
             progressSlider.value = Mathf.Clamp01(current / total);
 
         UpdateDurationText(current, total);
+#endif
     }
 
     /// <summary>
@@ -170,99 +202,63 @@ public class Module1Activity4Presenter : MonoBehaviour
     /// </summary>
     public void LoadAudio(string audioBase64)
     {
-        if (audioSource == null)
-        {
-            Debug.LogWarning("[Activity4Presenter] No hay AudioSource asignado.");
-            return;
-        }
-
         // Reset UI
         if (progressSlider != null) progressSlider.value = 0f;
         UpdateDurationText(0f, 0f);
 
         if (string.IsNullOrEmpty(audioBase64))
         {
-            if (debugLogs) Debug.Log("[Activity4Presenter] audioBase64 vacío -> no se carga audio.");
-            audioSource.clip = null;
+            if (debugLogs) Debug.Log("[Activity4Presenter] audio vacío.");
             return;
         }
 
-        audioBase64 = StripDataUrlPrefixIfNeeded(audioBase64);
+#if UNITY_WEBGL && !UNITY_EDITOR
 
-        byte[] bytes;
-        try
-        {
-            bytes = Convert.FromBase64String(audioBase64);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("[Activity4Presenter] Base64 inválido: " + ex.Message);
-            audioSource.clip = null;
-            return;
-        }
+    audioBase64 = StripDataUrlPrefixIfNeeded(audioBase64);
 
-        if (bytes == null || bytes.Length == 0)
-        {
-            Debug.LogWarning("[Activity4Presenter] Bytes vacíos tras decodificar base64.");
-            audioSource.clip = null;
-            return;
-        }
+    WA_LoadBase64(audioBase64);
 
-        try
-        {
-            var clip = WavUtility.ToAudioClip(bytes, "activity4_audio");
-            audioSource.clip = clip;
+    if (debugLogs)
+        Debug.Log("[Activity4Presenter] Audio WEBM cargado en JS");
 
-            if (debugLogs)
-                Debug.Log($"[Activity4Presenter] Audio cargado (WAV). length={clip.length:0.00}s samples={clip.samples} freq={clip.frequency} channels={clip.channels}");
-
-            // Actualiza UI con duración total
-            UpdateDurationText(0f, clip.length);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("[Activity4Presenter] No se pudo decodificar como WAV. Si es WEBM/MP3, conviértelo a WAV o usa URL. Error: " + ex.Message);
-            audioSource.clip = null;
-            UpdateDurationText(0f, 0f);
-        }
+#else
+        Debug.LogWarning("[Activity4Presenter] Este flujo solo funciona en WebGL.");
+#endif
     }
 
     private void OnPlayClicked()
     {
-        if (audioSource == null) return;
-        if (audioSource.clip == null)
-        {
-            if (debugLogs) Debug.Log("[Activity4Presenter] No hay clip cargado para reproducir.");
-            return;
-        }
+#if UNITY_WEBGL && !UNITY_EDITOR
+    WA_PlayPause();
+#else
+        if (audioSource == null || audioSource.clip == null) return;
 
         if (audioSource.isPlaying)
-        {
             audioSource.Pause();
-        }
         else
-        {
             audioSource.Play();
-        }
+#endif
     }
 
     private void OnSliderChanged(float value01)
     {
-        if (audioSource == null || audioSource.clip == null) return;
-
-        // Mientras el usuario arrastra, nos marcamos en scrubbing
         _isScrubbing = true;
 
-        float total = audioSource.clip.length;
-        float targetTime = Mathf.Clamp01(value01) * total;
+#if UNITY_WEBGL && !UNITY_EDITOR
+    float total = WA_GetDuration();
+    float target = Mathf.Clamp01(value01) * total;
+    WA_Seek(target);
 
-        audioSource.time = targetTime;
+    UpdateDurationText(target, total);
+#else
+        if (audioSource == null || audioSource.clip == null) return;
+
+        float total = audioSource.clip.length;
+        audioSource.time = Mathf.Clamp01(value01) * total;
 
         UpdateDurationText(audioSource.time, total);
+#endif
 
-        // Nota: Unity no tiene "onPointerUp" en Slider por defecto
-        // así que soltamos scrubbing al final del frame
-        // (suficiente para UX básica).
         CancelInvoke(nameof(EndScrub));
         Invoke(nameof(EndScrub), 0.05f);
     }
