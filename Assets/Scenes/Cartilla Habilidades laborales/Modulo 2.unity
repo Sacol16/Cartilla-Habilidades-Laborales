@@ -153,11 +153,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &5685804
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -699,11 +703,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &63699619
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -21781,11 +21789,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &843617660
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -23449,11 +23461,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &1057165043
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24490,11 +24506,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &1170277601
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -25400,11 +25420,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &1238642233
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -26046,11 +26070,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f562f997b340edd4d9fc376e19157d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawAreaCollider: {fileID: 1599655696}
+  uiDrawArea: {fileID: 0}
+  canvas: {fileID: 0}
   cloneOnDrag: 1
   destroyIfDroppedOutside: 1
-  snapZToZero: 1
-  dragZ: 0
+  lockAfterSuccessfulDrop: 1
+  disableRaycastWhenLocked: 1
+  worldStickerPrefab: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldZDepth: 5
 --- !u!61 &1341389098
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -34777,6 +34805,7 @@ MonoBehaviour:
   selectedColor: {r: 0, g: 0.6132076, b: 0, a: 1}
   unselectedColor: {r: 1, g: 1, b: 1, a: 1}
   enableWhenSelected: {fileID: 1498226672}
+  activityManager: {fileID: 0}
   selectedIndex: -1
 --- !u!114 &1677693311
 MonoBehaviour:
@@ -34796,6 +34825,8 @@ MonoBehaviour:
   durationText: {fileID: 251321658}
   recordButtonLabel: {fileID: 226518517}
   maxSeconds: 60
+  activityManager: {fileID: 0}
+  debugLogs: 0
   playbackSource: {fileID: 219307409}
   sampleRate: 44100
 --- !u!1 &1697699743
@@ -35294,11 +35325,13 @@ MonoBehaviour:
   canva1: {fileID: 1350384096}
   canva2: {fileID: 1174876645}
   drawingSaver: {fileID: 610045854}
+  activityManager: {fileID: 0}
   saveButton: {fileID: 1781122323}
   buttonLabelTMP: {fileID: 1969466287}
   buttonLabelLegacy: {fileID: 0}
   savingText: Guardando...
   waitSeconds: 5
+  debugLogs: 0
 --- !u!1 &1796078981
 GameObject:
   m_ObjectHideFlags: 0
@@ -46866,7 +46899,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 34.54}
-  m_SizeDelta: {x: 512, y: 300}
+  m_SizeDelta: {x: 1080, y: 720}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2012663429
 MonoBehaviour:
@@ -46888,7 +46921,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 67ba2873527d7ec4da189a40a6800207, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 146a8bd50e3b5b64a84e10a1109cae79, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

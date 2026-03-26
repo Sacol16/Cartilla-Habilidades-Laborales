@@ -178,11 +178,7 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
 
     private void SetContinue1Enabled(bool value)
     {
-        if (continueButton1 == null)
-        {
-            Debug.LogWarning("[Module3ActivityManager] continueButton1 no asignado.");
-            return;
-        }
+        if (continueButton1 == null) return;
 
         if (hideButton1Instead)
         {
@@ -192,9 +188,6 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
         {
             continueButton1.gameObject.SetActive(true);
             continueButton1.interactable = value;
-
-            var img = continueButton1.GetComponent<Image>();
-            if (img != null) img.color = value ? Color.white : new Color(1f, 1f, 1f, 0.5f);
         }
     }
 
@@ -248,7 +241,7 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
         }
         else
         {
-        A2Step(-1);
+            A2Step(-1);
         }
 
         a2Complete = IsActivity2Complete();
@@ -310,8 +303,6 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
             continueButton2.gameObject.SetActive(true);
             continueButton2.interactable = value;
 
-            var img = continueButton2.GetComponent<Image>();
-            if (img != null) img.color = value ? Color.white : new Color(1f, 1f, 1f, 0.5f);
         }
     }
 
@@ -451,12 +442,12 @@ public class Module3ActivityManager : MonoBehaviour, IActivity4Receiver
 
     private void PlayPlacementSound(bool isGood)
     {
-    if (audioSource == null) return;
+        if (audioSource == null) return;
 
-    if (isGood && goodPlacementSound != null)
-        audioSource.PlayOneShot(goodPlacementSound);
+        if (isGood && goodPlacementSound != null)
+            audioSource.PlayOneShot(goodPlacementSound);
 
-    if (!isGood && badPlacementSound != null)
-        audioSource.PlayOneShot(badPlacementSound);
+        if (!isGood && badPlacementSound != null)
+            audioSource.PlayOneShot(badPlacementSound);
     }
 }
